@@ -124,33 +124,61 @@
   }
 }
 
-/* Glass morphism utilities */
+/* Pantone 2026 Inspired Color Palette */
+/* Cloud Dancer (base) + Alexandrite (teal) + Lava Falls (coral) + Electric Fuchsia */
+
 @layer utilities {
+  /* Glass morphism - softer, cleaner */
   .glass {
-    @apply bg-white/70 dark:bg-zinc-900/70 backdrop-blur-xl;
+    @apply bg-white/60 dark:bg-zinc-900/60 backdrop-blur-2xl;
   }
 
   .glass-card {
-    @apply bg-white/80 dark:bg-zinc-800/80 backdrop-blur-xl border border-white/20 dark:border-zinc-700/50;
+    @apply bg-white/70 dark:bg-zinc-800/70 backdrop-blur-2xl border border-zinc-200/50 dark:border-zinc-700/30 shadow-sm;
   }
 
-  .gradient-text {
-    @apply bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent;
+  /* Text highlight - Alexandrite teal */
+  .text-highlight {
+    @apply text-teal-600 dark:text-teal-400;
   }
 
-  .gradient-bg {
-    @apply bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-zinc-900 dark:via-zinc-900 dark:to-zinc-800;
+  /* Clean hero background - Cloud Dancer inspired */
+  .hero-bg {
+    @apply bg-stone-50 dark:bg-zinc-950;
   }
 
-  .orb-blue {
-    @apply absolute rounded-full bg-blue-400/30 dark:bg-blue-500/20 blur-3xl;
+  /* Blur orbs - subtle and sophisticated */
+  .orb-teal {
+    @apply absolute rounded-full bg-teal-300/20 dark:bg-teal-500/10 blur-[100px];
   }
 
-  .orb-purple {
-    @apply absolute rounded-full bg-purple-400/30 dark:bg-purple-500/20 blur-3xl;
+  .orb-coral {
+    @apply absolute rounded-full bg-orange-300/15 dark:bg-orange-500/10 blur-[120px];
   }
 
-  .orb-pink {
-    @apply absolute rounded-full bg-pink-400/20 dark:bg-pink-500/10 blur-3xl;
+  .orb-fuchsia {
+    @apply absolute rounded-full bg-fuchsia-300/15 dark:bg-fuchsia-500/10 blur-[100px];
+  }
+
+  /* Accent colors */
+  .accent-alexandrite {
+    @apply bg-teal-600 text-white hover:bg-teal-700;
+  }
+
+  .accent-coral {
+    @apply bg-orange-500 text-white hover:bg-orange-600;
+  }
+
+  .accent-fuchsia {
+    @apply bg-fuchsia-500 text-white hover:bg-fuchsia-600;
+  }
+
+  /* Section backgrounds */
+  .section-light {
+    @apply bg-stone-50/50 dark:bg-zinc-900/50;
+  }
+
+  .section-warm {
+    @apply bg-orange-50/30 dark:bg-zinc-900/80;
   }
 }

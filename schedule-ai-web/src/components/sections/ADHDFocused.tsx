@@ -12,26 +12,26 @@ export function ADHDFocused() {
     {
       key: "card1",
       icon: <ShieldIcon />,
-      color: "from-red-500 to-orange-500",
+      color: "bg-teal-500",
     },
     {
       key: "card2",
       icon: <SparklesIcon />,
-      color: "from-purple-500 to-blue-500",
+      color: "bg-teal-500",
     },
     {
       key: "card3",
       icon: <ChartIcon />,
-      color: "from-green-500 to-emerald-500",
+      color: "bg-teal-500",
     },
   ];
 
   return (
     <section className="py-24 px-6 relative overflow-hidden">
-      {/* Background decoration */}
+      {/* Blur orbs */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="orb-purple w-96 h-96 top-0 right-0" />
-        <div className="orb-blue w-72 h-72 bottom-0 left-0" />
+        <div className="orb-fuchsia w-[500px] h-[500px] -top-40 -right-40" />
+        <div className="orb-teal w-[400px] h-[400px] -bottom-40 -left-40" />
       </div>
 
       <div className="max-w-6xl mx-auto relative z-10">
@@ -51,7 +51,7 @@ export function ADHDFocused() {
                 <Card className="h-full glass-card border-0 hover:shadow-2xl transition-shadow duration-300">
                   <CardHeader>
                     <div
-                      className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-4`}
+                      className={`w-14 h-14 rounded-2xl ${card.color} flex items-center justify-center mb-4`}
                     >
                       {card.icon}
                     </div>

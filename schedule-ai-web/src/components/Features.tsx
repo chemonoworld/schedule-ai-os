@@ -5,14 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
 
-const featureColors = [
-  "from-blue-500 to-cyan-500",
-  "from-red-500 to-orange-500",
-  "from-green-500 to-emerald-500",
-  "from-purple-500 to-pink-500",
-  "from-indigo-500 to-blue-500",
-  "from-amber-500 to-yellow-500",
-];
+const FEATURE_COLOR = "bg-teal-500";
 
 export function Features() {
   const t = useTranslations("features");
@@ -39,7 +32,7 @@ export function Features() {
         </FadeIn>
 
         <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
+          {features.map((feature) => (
             <StaggerItem key={feature.key}>
               <motion.div
                 whileHover={{ y: -8, scale: 1.02 }}
@@ -50,7 +43,7 @@ export function Features() {
                     <motion.div
                       whileHover={{ rotate: [0, -10, 10, 0] }}
                       transition={{ duration: 0.5 }}
-                      className={`w-12 h-12 bg-gradient-to-br ${featureColors[index]} rounded-xl flex items-center justify-center text-white mb-2`}
+                      className={`w-12 h-12 ${FEATURE_COLOR} rounded-xl flex items-center justify-center text-white mb-2`}
                     >
                       {feature.icon}
                     </motion.div>

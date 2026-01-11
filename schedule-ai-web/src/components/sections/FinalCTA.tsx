@@ -11,21 +11,10 @@ export function FinalCTA() {
 
   return (
     <section className="py-24 px-6 relative overflow-hidden">
-      {/* Gradient background */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-600 via-purple-600 to-pink-600" />
+      {/* Solid teal background - Alexandrite inspired */}
+      <div className="absolute inset-0 bg-teal-600 dark:bg-teal-800" />
 
-      {/* Pattern overlay */}
-      <div className="absolute inset-0 opacity-10">
-        <div
-          className="absolute inset-0"
-          style={{
-            backgroundImage: `radial-gradient(circle at 2px 2px, white 1px, transparent 0)`,
-            backgroundSize: "32px 32px",
-          }}
-        />
-      </div>
-
-      {/* Floating orbs */}
+      {/* Blur orbs for depth */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <motion.div
           animate={{
@@ -37,7 +26,7 @@ export function FinalCTA() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-20 left-20 w-32 h-32 bg-white/10 rounded-full blur-2xl"
+          className="absolute top-10 left-10 w-[300px] h-[300px] bg-orange-400/20 rounded-full blur-[100px]"
         />
         <motion.div
           animate={{
@@ -49,7 +38,7 @@ export function FinalCTA() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute bottom-20 right-20 w-48 h-48 bg-white/10 rounded-full blur-2xl"
+          className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-fuchsia-400/15 rounded-full blur-[120px]"
         />
       </div>
 
@@ -66,8 +55,7 @@ export function FinalCTA() {
             <Button
               asChild
               size="lg"
-              variant="secondary"
-              className="rounded-full px-10 py-7 text-lg font-semibold shadow-2xl"
+              className="rounded-full px-10 py-7 text-lg font-semibold shadow-2xl bg-white text-teal-700 hover:bg-stone-100"
             >
               <Link href="/download">
                 <AppleIcon className="mr-2" />

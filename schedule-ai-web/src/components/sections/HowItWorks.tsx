@@ -12,19 +12,19 @@ export function HowItWorks() {
       number: "01",
       key: "step1",
       icon: <PenIcon />,
-      color: "from-blue-500 to-cyan-500",
+      color: "bg-teal-500",
     },
     {
       number: "02",
       key: "step2",
       icon: <BrainIcon />,
-      color: "from-purple-500 to-pink-500",
+      color: "bg-teal-500",
     },
     {
       number: "03",
       key: "step3",
       icon: <RocketIcon />,
-      color: "from-orange-500 to-red-500",
+      color: "bg-teal-500",
     },
   ];
 
@@ -41,9 +41,6 @@ export function HowItWorks() {
         </FadeIn>
 
         <StaggerContainer className="grid md:grid-cols-3 gap-8 relative">
-          {/* Connecting line */}
-          <div className="hidden md:block absolute top-24 left-1/6 right-1/6 h-0.5 bg-gradient-to-r from-blue-500 via-purple-500 to-orange-500 opacity-20" />
-
           {steps.map((step, index) => (
             <StaggerItem key={step.key}>
               <motion.div
@@ -51,13 +48,13 @@ export function HowItWorks() {
                 className="relative text-center"
               >
                 {/* Step number */}
-                <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-8xl font-bold text-zinc-100 dark:text-zinc-800 select-none">
+                <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-2 text-[120px] font-black text-zinc-200/80 dark:text-zinc-700/80 select-none leading-none">
                   {step.number}
                 </div>
 
                 {/* Icon */}
                 <div
-                  className={`relative z-10 w-20 h-20 mx-auto rounded-2xl bg-gradient-to-br ${step.color} flex items-center justify-center shadow-lg mb-6`}
+                  className={`relative z-10 w-20 h-20 mx-auto rounded-2xl ${step.color} flex items-center justify-center shadow-lg mb-6`}
                 >
                   {step.icon}
                 </div>
@@ -72,7 +69,7 @@ export function HowItWorks() {
 
                 {/* Arrow for non-last items */}
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-24 -right-4 text-zinc-300 dark:text-zinc-700">
+                  <div className="hidden md:block absolute top-24 -right-4 text-teal-400 dark:text-teal-600">
                     <ArrowIcon />
                   </div>
                 )}

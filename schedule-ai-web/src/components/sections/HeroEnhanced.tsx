@@ -5,19 +5,18 @@ import { Link } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import { motion } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { MacWindow } from "@/components/ui/mac-window";
 
 export function HeroEnhanced() {
   const t = useTranslations("hero");
 
   return (
-    <section className="relative pt-32 pb-20 px-6 overflow-hidden gradient-bg">
-      {/* Background orbs */}
+    <section className="relative pt-32 pb-20 px-6 overflow-hidden hero-bg">
+      {/* Blur orbs - Pantone inspired */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb-blue w-72 h-72 top-20 -left-20" />
-        <div className="orb-purple w-96 h-96 bottom-20 -right-20" />
-        <div className="orb-pink w-64 h-64 top-1/2 left-1/3" />
+        <div className="orb-teal w-[500px] h-[500px] -top-20 -left-40" />
+        <div className="orb-coral w-[600px] h-[600px] bottom-0 -right-40" />
+        <div className="orb-fuchsia w-[400px] h-[400px] top-1/3 left-1/4" />
       </div>
 
       <div className="max-w-7xl mx-auto relative z-10">
@@ -29,21 +28,10 @@ export function HeroEnhanced() {
             transition={{ duration: 0.6 }}
             className="text-center lg:text-left"
           >
-            <Badge
-              variant="secondary"
-              className="mb-6 px-4 py-2 text-sm font-medium bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-800"
-            >
-              <span className="relative flex h-2 w-2 mr-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-500" />
-              </span>
-              {t("badge")}
-            </Badge>
-
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-6">
               {t("title1")}
               <br />
-              <span className="gradient-text">{t("title2")}</span>
+              <span className="text-teal-600 dark:text-teal-400">{t("title2")}</span>
             </h1>
 
             <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
@@ -54,7 +42,7 @@ export function HeroEnhanced() {
               <Button
                 asChild
                 size="lg"
-                className="rounded-full px-8 py-6 text-lg font-medium"
+                className="rounded-full px-8 py-6 text-lg font-medium bg-zinc-900 hover:bg-zinc-800 dark:bg-white dark:text-zinc-900 dark:hover:bg-zinc-100"
               >
                 <Link href="/download">
                   <AppleIcon className="mr-2" />
@@ -90,10 +78,10 @@ export function HeroEnhanced() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5, duration: 0.4 }}
-                className="absolute -bottom-4 -left-4 glass-card rounded-xl px-4 py-3 shadow-lg"
+                className="absolute -bottom-4 -left-4 glass-card rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
                     <CheckIcon />
                   </div>
                   <div>
@@ -109,7 +97,7 @@ export function HeroEnhanced() {
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.7, duration: 0.4 }}
-                className="absolute -top-4 -right-4 glass-card rounded-xl px-4 py-3 shadow-lg"
+                className="absolute -top-4 -right-4 glass-card rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
                   <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">

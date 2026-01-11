@@ -10,6 +10,8 @@ import { FadeIn } from "@/components/ui/fade-in";
 
 type TabValue = "today" | "focus" | "plans" | "progress";
 
+const TAB_COLOR = "bg-teal-500";
+
 const tabScreenshots: Record<TabValue, string> = {
   today: "/screenshots/today-main.png",
   focus: "/screenshots/focus-timer.png",
@@ -67,7 +69,7 @@ export function AppShowcase() {
                 className="glass-card rounded-2xl p-8"
               >
                 <div className="flex items-center gap-4 mb-4">
-                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
+                  <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${TAB_COLOR}`}>
                     <TabIcon tab={activeTab} />
                   </div>
                   <h3 className="text-2xl font-bold text-zinc-900 dark:text-zinc-100">
