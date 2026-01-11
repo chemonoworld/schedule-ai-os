@@ -76,13 +76,12 @@ export function HeroEnhanced() {
             <div className="relative transform lg:rotate-1 hover:rotate-0 transition-transform duration-500">
               <MacWindow title="Schedule AI" className="shadow-2xl">
                 <Image
-                  src="/screenshots/today-main.svg"
+                  src="/screenshots/today-main.png"
                   alt="Schedule AI Today View"
                   width={800}
                   height={600}
                   className="w-full h-auto"
                   priority
-                  unoptimized
                 />
               </MacWindow>
 
