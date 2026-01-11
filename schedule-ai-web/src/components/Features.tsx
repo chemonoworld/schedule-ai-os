@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
 
-const FEATURE_COLOR = "bg-teal-500";
+const FEATURE_COLOR = "bg-zinc-900 dark:bg-zinc-100";
 
 export function Features() {
   const t = useTranslations("features");
@@ -43,7 +43,7 @@ export function Features() {
                     <motion.div
                       whileHover={{ rotate: [0, -10, 10, 0] }}
                       transition={{ duration: 0.5 }}
-                      className={`w-12 h-12 ${FEATURE_COLOR} rounded-xl flex items-center justify-center text-white mb-2`}
+                      className={`w-12 h-12 ${FEATURE_COLOR} rounded-xl flex items-center justify-center text-white dark:text-zinc-900 mb-2`}
                     >
                       {feature.icon}
                     </motion.div>

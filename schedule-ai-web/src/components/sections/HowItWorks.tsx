@@ -12,19 +12,19 @@ export function HowItWorks() {
       number: "01",
       key: "step1",
       icon: <PenIcon />,
-      color: "bg-teal-500",
+      color: "bg-zinc-900 dark:bg-zinc-100",
     },
     {
       number: "02",
       key: "step2",
       icon: <BrainIcon />,
-      color: "bg-teal-500",
+      color: "bg-zinc-900 dark:bg-zinc-100",
     },
     {
       number: "03",
       key: "step3",
       icon: <RocketIcon />,
-      color: "bg-teal-500",
+      color: "bg-zinc-900 dark:bg-zinc-100",
     },
   ];
 
@@ -69,7 +69,7 @@ export function HowItWorks() {
 
                 {/* Arrow for non-last items */}
                 {index < steps.length - 1 && (
-                  <div className="hidden md:block absolute top-24 -right-4 text-teal-400 dark:text-teal-600">
+                  <div className="hidden md:block absolute top-24 -right-4 text-zinc-400 dark:text-zinc-500">
                     <ArrowIcon />
                   </div>
                 )}
@@ -84,7 +84,7 @@ export function HowItWorks() {
 
 function PenIcon() {
   return (
-    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-10 h-10 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
     </svg>
   );
@@ -92,7 +92,7 @@ function PenIcon() {
 
 function BrainIcon() {
   return (
-    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-10 h-10 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
     </svg>
   );
@@ -100,7 +100,7 @@ function BrainIcon() {
 
 function RocketIcon() {
   return (
-    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-10 h-10 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
     </svg>
   );

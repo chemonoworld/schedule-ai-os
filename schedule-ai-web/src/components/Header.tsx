@@ -45,7 +45,7 @@ export function Header() {
               className="rounded-lg"
             />
           </motion.div>
-          <span className="font-semibold text-lg text-zinc-900 dark:text-zinc-100 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
+          <span className="font-semibold text-lg text-zinc-900 dark:text-zinc-100 group-hover:text-zinc-600 dark:group-hover:text-zinc-300 transition-colors">
             Schedule AI
           </span>
         </Link>

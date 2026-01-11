@@ -14,7 +14,7 @@ export function HeroEnhanced() {
     <section className="relative pt-32 pb-20 px-6 overflow-hidden hero-bg">
       {/* Blur orbs - Pantone inspired */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="orb-teal w-[500px] h-[500px] -top-20 -left-40" />
+        <div className="orb-dark w-[500px] h-[500px] -top-20 -left-40" />
         <div className="orb-coral w-[600px] h-[600px] bottom-0 -right-40" />
         <div className="orb-fuchsia w-[400px] h-[400px] top-1/3 left-1/4" />
       </div>
@@ -31,7 +31,7 @@ export function HeroEnhanced() {
             <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-zinc-900 dark:text-zinc-100 leading-tight mb-6">
               {t("title1")}
               <br />
-              <span className="text-teal-600 dark:text-teal-400">{t("title2")}</span>
+              <span className="text-zinc-600 dark:text-zinc-400">{t("title2")}</span>
             </h1>
 
             <p className="text-xl text-zinc-600 dark:text-zinc-400 max-w-xl mx-auto lg:mx-0 mb-8 leading-relaxed">
@@ -81,7 +81,7 @@ export function HeroEnhanced() {
                 className="absolute -bottom-4 -left-4 glass-card rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100 rounded-full flex items-center justify-center">
                     <CheckIcon />
                   </div>
                   <div>
@@ -100,7 +100,7 @@ export function HeroEnhanced() {
                 className="absolute -top-4 -right-4 glass-card rounded-xl px-4 py-3"
               >
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 bg-orange-500 rounded-full flex items-center justify-center">
+                  <div className="w-8 h-8 bg-zinc-900 dark:bg-zinc-100 rounded-full flex items-center justify-center">
                     <FireIcon />
                   </div>
                   <div>
@@ -129,7 +129,7 @@ function AppleIcon({ className }: { className?: string }) {
 
 function CheckIcon() {
   return (
-    <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <svg className="w-4 h-4 text-white dark:text-zinc-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
     </svg>
   );
@@ -137,8 +137,8 @@ function CheckIcon() {
 
 function FireIcon() {
   return (
-    <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
-      <path d="M12 23c-4.97 0-9-3.58-9-8 0-2.75 1.25-5.04 2.59-6.83.67-.89 1.38-1.66 2.01-2.27.31-.3.6-.56.84-.77l.24-.21.08-.07.03-.02.01-.01L10 6l1.2-1.17.01.01.03.02.08.07.24.21c.24.21.53.47.84.77.63.61 1.34 1.38 2.01 2.27C15.75 9.96 17 12.25 17 15c0 4.42-4.03 8-9 8z" />
+    <svg className="w-4 h-4 text-white dark:text-zinc-900" fill="currentColor" viewBox="0 0 24 24">
+      <path fillRule="evenodd" d="M12.963 2.286a.75.75 0 00-1.071-.136 9.742 9.742 0 00-3.539 6.177A7.547 7.547 0 016.648 6.61a.75.75 0 00-1.152.082A9 9 0 1015.68 4.534a7.46 7.46 0 01-2.717-2.248zM15.75 14.25a3.75 3.75 0 11-7.313-1.172c.628.465 1.35.81 2.133 1a5.99 5.99 0 011.925-3.545 3.75 3.75 0 013.255 3.717z" clipRule="evenodd" />
     </svg>
   );
 }

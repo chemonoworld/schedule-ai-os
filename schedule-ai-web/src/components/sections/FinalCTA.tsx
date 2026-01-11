@@ -11,8 +11,8 @@ export function FinalCTA() {
 
   return (
     <section className="py-24 px-6 relative overflow-hidden">
-      {/* Solid teal background - Alexandrite inspired */}
-      <div className="absolute inset-0 bg-teal-600 dark:bg-teal-800" />
+      {/* Solid black background */}
+      <div className="absolute inset-0 bg-zinc-900 dark:bg-zinc-950" />
 
       {/* Blur orbs for depth */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -26,7 +26,7 @@ export function FinalCTA() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute top-10 left-10 w-[300px] h-[300px] bg-orange-400/20 rounded-full blur-[100px]"
+          className="absolute top-10 left-10 w-[300px] h-[300px] bg-zinc-600/20 rounded-full blur-[100px]"
         />
         <motion.div
           animate={{
@@ -38,7 +38,7 @@ export function FinalCTA() {
             repeat: Infinity,
             ease: "easeInOut",
           }}
-          className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-fuchsia-400/15 rounded-full blur-[120px]"
+          className="absolute bottom-10 right-10 w-[400px] h-[400px] bg-zinc-500/15 rounded-full blur-[120px]"
         />
       </div>
 
@@ -55,7 +55,7 @@ export function FinalCTA() {
             <Button
               asChild
               size="lg"
-              className="rounded-full px-10 py-7 text-lg font-semibold shadow-2xl bg-white text-teal-700 hover:bg-stone-100"
+              className="rounded-full px-10 py-7 text-lg font-semibold shadow-2xl bg-white text-zinc-900 hover:bg-stone-100"
             >
               <Link href="/download">
                 <AppleIcon className="mr-2" />
