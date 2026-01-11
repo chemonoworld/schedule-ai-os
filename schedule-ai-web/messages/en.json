@@ -96,5 +96,69 @@
   "language": {
     "en": "English",
     "ko": "한국어"
+  },
+  "showcase": {
+    "title": "Experience Every Feature",
+    "subtitle": "Explore how Schedule AI helps you stay focused and productive",
+    "tabs": {
+      "today": "Today",
+      "focus": "Focus",
+      "plans": "Plans",
+      "progress": "Progress"
+    },
+    "today": {
+      "title": "Quick Task Management",
+      "description": "Swipe to complete tasks instantly. No friction, just flow. Add tasks naturally and watch them organize themselves."
+    },
+    "focus": {
+      "title": "Hard Blocking Focus Mode",
+      "description": "When you need to focus, we mean it. Distracting apps are terminated, not just hidden. Pomodoro timer keeps you on track."
+    },
+    "plans": {
+      "title": "AI-Powered Planning",
+      "description": "Write your plans in plain English. Claude AI understands your intent and creates structured, timed tasks automatically."
+    },
+    "progress": {
+      "title": "Visual Progress Tracking",
+      "description": "Your productivity story, visualized. GitHub-style heatmaps show your journey. Streaks keep you motivated."
+    }
+  },
+  "howItWorks": {
+    "title": "Three Simple Steps",
+    "subtitle": "From idea to execution in seconds",
+    "step1": {
+      "title": "Write",
+      "description": "Type your plans naturally. No formatting required."
+    },
+    "step2": {
+      "title": "Parse",
+      "description": "AI analyzes and structures your tasks with time estimates."
+    },
+    "step3": {
+      "title": "Execute",
+      "description": "Complete tasks with focus mode support. Track your progress."
+    }
+  },
+  "adhd": {
+    "title": "Built for ADHD Brains",
+    "subtitle": "We understand the struggle. These features are designed specifically for how your brain works.",
+    "card1": {
+      "title": "Hard Blocking",
+      "description": "No willpower needed. Distracting apps are terminated at system level. You literally cannot open them."
+    },
+    "card2": {
+      "title": "No Decision Fatigue",
+      "description": "AI makes the planning decisions for you. Just write what you need to do, we handle the rest."
+    },
+    "card3": {
+      "title": "Visual Dopamine",
+      "description": "Heatmaps and streaks give instant visual rewards. See your progress grow every day."
+    }
+  },
+  "cta": {
+    "title": "Ready to Take Control?",
+    "subtitle": "Free to use. No account required. Your data stays on your device.",
+    "button": "Download for macOS",
+    "footnote": "macOS 12+ required"
   }
 }

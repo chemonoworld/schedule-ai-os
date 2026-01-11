@@ -1,91 +1,81 @@
 "use client";
 
 import { useTranslations } from "next-intl";
+import { motion } from "framer-motion";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { FadeIn, StaggerContainer, StaggerItem } from "@/components/ui/fade-in";
+
+const featureColors = [
+  "from-blue-500 to-cyan-500",
+  "from-red-500 to-orange-500",
+  "from-green-500 to-emerald-500",
+  "from-purple-500 to-pink-500",
+  "from-indigo-500 to-blue-500",
+  "from-amber-500 to-yellow-500",
+];
 
 export function Features() {
   const t = useTranslations("features");
 
+  const features = [
+    { key: "aiParsing", icon: <BrainIcon /> },
+    { key: "hardBlocking", icon: <ShieldIcon /> },
+    { key: "progress", icon: <ChartIcon /> },
+    { key: "recurring", icon: <RepeatIcon /> },
+    { key: "multilingual", icon: <GlobeIcon /> },
+    { key: "privacy", icon: <LockIcon /> },
+  ];
+
   return (
-    <section id="features" className="py-20 px-6 bg-zinc-50 dark:bg-zinc-900">
+    <section id="features" className="py-24 px-6 bg-zinc-50 dark:bg-zinc-900/50">
       <div className="max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+        <FadeIn className="text-center mb-16">
+          <h2 className="text-4xl sm:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
             {t("title")}
           </h2>
           <p className="text-lg text-zinc-600 dark:text-zinc-400 max-w-2xl mx-auto">
             {t("subtitle")}
           </p>
-        </div>
+        </FadeIn>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          <FeatureCard
-            icon={<BrainIcon />}
-            title={t("aiParsing.title")}
-            description={t("aiParsing.description")}
-          />
-          <FeatureCard
-            icon={<ShieldIcon />}
-            title={t("hardBlocking.title")}
-            description={t("hardBlocking.description")}
-          />
-          <FeatureCard
-            icon={<ChartIcon />}
-            title={t("progress.title")}
-            description={t("progress.description")}
-          />
-          <FeatureCard
-            icon={<RepeatIcon />}
-            title={t("recurring.title")}
-            description={t("recurring.description")}
-          />
-          <FeatureCard
-            icon={<GlobeIcon />}
-            title={t("multilingual.title")}
-            description={t("multilingual.description")}
-          />
-          <FeatureCard
-            icon={<LockIcon />}
-            title={t("privacy.title")}
-            description={t("privacy.description")}
-          />
-        </div>
+        <StaggerContainer className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {features.map((feature, index) => (
+            <StaggerItem key={feature.key}>
+              <motion.div
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              >
+                <Card className="h-full glass-card border-0 hover:shadow-xl transition-all duration-300">
+                  <CardHeader>
+                    <motion.div
+                      whileHover={{ rotate: [0, -10, 10, 0] }}
+                      transition={{ duration: 0.5 }}
+                      className={`w-12 h-12 bg-gradient-to-br ${featureColors[index]} rounded-xl flex items-center justify-center text-white mb-2`}
+                    >
+                      {feature.icon}
+                    </motion.div>
+                    <CardTitle className="text-xl font-bold text-zinc-900 dark:text-zinc-100">
+                      {t(`${feature.key}.title`)}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <CardDescription className="text-base text-zinc-600 dark:text-zinc-400 leading-relaxed">
+                      {t(`${feature.key}.description`)}
+                    </CardDescription>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
       </div>
     </section>
   );
 }
 
-function FeatureCard({
-  icon,
-  title,
-  description,
-}: {
-  icon: React.ReactNode;
-  title: string;
-  description: string;
-}) {
-  return (
-    <div className="bg-white dark:bg-zinc-800 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-700 hover:shadow-lg transition-shadow">
-      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center text-white mb-4">
-        {icon}
-      </div>
-      <h3 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
-        {title}
-      </h3>
-      <p className="text-zinc-600 dark:text-zinc-400 leading-relaxed">
-        {description}
-      </p>
-    </div>
-  );
-}
-
 function BrainIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -98,12 +88,7 @@ function BrainIcon() {
 
 function ShieldIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -116,12 +101,7 @@ function ShieldIcon() {
 
 function ChartIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -134,12 +114,7 @@ function ChartIcon() {
 
 function RepeatIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -152,12 +127,7 @@ function RepeatIcon() {
 
 function GlobeIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -170,12 +140,7 @@ function GlobeIcon() {
 
 function LockIcon() {
   return (
-    <svg
-      className="w-6 h-6"
-      fill="none"
-      stroke="currentColor"
-      viewBox="0 0 24 24"
-    >
+    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
