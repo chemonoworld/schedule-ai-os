@@ -11,10 +11,10 @@ import { FadeIn } from "@/components/ui/fade-in";
 type TabValue = "today" | "focus" | "plans" | "progress";
 
 const tabScreenshots: Record<TabValue, string> = {
-  today: "/screenshots/today-main.png",
-  focus: "/screenshots/focus-timer.png",
-  plans: "/screenshots/plans-ai.png",
-  progress: "/screenshots/progress-heatmap.png",
+  today: "/screenshots/today-main.svg",
+  focus: "/screenshots/focus-timer.svg",
+  plans: "/screenshots/plans-ai.svg",
+  progress: "/screenshots/progress-heatmap.svg",
 };
 
 export function AppShowcase() {
@@ -98,6 +98,7 @@ export function AppShowcase() {
                     width={800}
                     height={600}
                     className="w-full h-auto"
+                    unoptimized
                   />
                 </MacWindow>
               </motion.div>
