@@ -1,0 +1,52 @@
+{
+  "title": "플랜 관리",
+  "subtitle": "반복 일정과 장기 계획을 관리하세요",
+  "recurring": {
+    "title": "반복 일정",
+    "add": "+ 추가",
+    "collapse": "접기",
+    "placeholder": "예: 2026년 1월부터 2월까지 매주 토요일 12-16시 토플 학원",
+    "form": {
+      "title": "제목",
+      "titlePlaceholder": "일정 제목",
+      "location": "장소",
+      "locationPlaceholder": "장소 (선택사항)",
+      "repeat": "반복",
+      "daily": "매일",
+      "weekly": "매주",
+      "monthly": "매월",
+      "days": "요일",
+      "time": "시간",
+      "period": "기간"
+    },
+    "preview": {
+      "title": "미리보기: {{count}}개 태스크 생성 예정",
+      "generate": "미리보기 생성",
+      "collapse": "접기",
+      "showMore": "{{count}}개 더 보기",
+      "createTasks": "{{count}}개 태스크 생성"
+    },
+    "list": {
+      "noEnd": "무기한"
+    },
+    "creating": "생성 중..."
+  },
+  "daily": {
+    "title": "데일리 플랜",
+    "placeholder": "계획을 입력하세요... (예: '한국어 공부하기, 영어 공부하기, 수학 공부하기')",
+    "create": "계획 생성",
+    "analyze": "AI 분석",
+    "generate": "오늘 할 일 생성"
+  },
+  "list": {
+    "empty": {
+      "title": "아직 플랜이 없습니다",
+      "hint": "위에서 플랜을 생성하면 AI가 세부 작업으로 나눠줍니다"
+    }
+  },
+  "editModal": {
+    "title": "계획 수정",
+    "titlePlaceholder": "계획 제목",
+    "descriptionPlaceholder": "설명 (선택사항)"
+  }
+}

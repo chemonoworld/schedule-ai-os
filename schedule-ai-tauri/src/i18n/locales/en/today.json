@@ -1,0 +1,41 @@
+{
+  "title": "Today",
+  "dateLabel": "Today",
+  "progress": {
+    "completed": "{{completed}}/{{total}} Completed"
+  },
+  "empty": {
+    "title": "No tasks for this day",
+    "hint": "Add a task below or let AI generate from your plans"
+  },
+  "addTask": {
+    "placeholder": "Add a new task...",
+    "button": "Add"
+  },
+  "export": {
+    "markdown": "Export as Markdown",
+    "json": "Export as JSON",
+    "md": "MD",
+    "jsonShort": "JSON"
+  },
+  "taskList": {
+    "addSubtask": "Add subtask"
+  },
+  "editModal": {
+    "title": "Edit Task",
+    "titleLabel": "Title",
+    "timeLabel": "Time",
+    "locationLabel": "Location",
+    "locationPlaceholder": "Enter location (optional)"
+  },
+  "splitModal": {
+    "title": "Split Task",
+    "subtaskPlaceholder": "Subtask {{index}}",
+    "addSubtask": "+ Add Subtask",
+    "split": "Split"
+  },
+  "subtaskModal": {
+    "title": "Edit Subtask",
+    "placeholder": "Subtask title"
+  }
+}

@@ -1,0 +1,26 @@
+{
+  "name": "schedule-ai",
+  "version": "0.1.1",
+  "private": true,
+  "description": "ADHD-friendly schedule management app",
+  "scripts": {
+    "dev": "turbo run dev",
+    "dev:desktop": "pnpm --filter @schedule-ai/desktop tauri dev",
+    "dev:web": "pnpm --filter schedule-ai-web dev",
+    "build": "turbo run build",
+    "build:web": "pnpm --filter schedule-ai-web build",
+    "lint": "turbo run lint",
+    "type-check": "turbo run type-check",
+    "clean": "turbo run clean && rm -rf node_modules"
+  },
+  "devDependencies": {
+    "@resvg/resvg-js": "^2.6.2",
+    "sharp": "^0.34.5",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.2"
+  },
+  "packageManager": "pnpm@10.21.0",
+  "engines": {
+    "node": ">=20"
+  }
+}

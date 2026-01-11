@@ -1,0 +1,92 @@
+{
+  "extName": {
+    "message": "Schedule AI Focus",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Focus Mode와 연동하여 방해가 되는 웹사이트를 차단합니다",
+    "description": "Extension description"
+  },
+  "statusConnecting": {
+    "message": "연결 중...",
+    "description": "Connection status: connecting"
+  },
+  "statusConnected": {
+    "message": "데스크톱 연결됨",
+    "description": "Connection status: connected to desktop"
+  },
+  "statusStandalone": {
+    "message": "단독 모드",
+    "description": "Connection status: standalone mode"
+  },
+  "focusModeStart": {
+    "message": "Focus Mode 시작",
+    "description": "Button text to start focus mode"
+  },
+  "focusModeStop": {
+    "message": "Focus Mode 종료",
+    "description": "Button text to stop focus mode"
+  },
+  "blockedUrls": {
+    "message": "차단 URL",
+    "description": "Section header for blocked URLs"
+  },
+  "addUrl": {
+    "message": "URL 추가",
+    "description": "Button title to add URL"
+  },
+  "urlPlaceholder": {
+    "message": "예: tiktok.com",
+    "description": "Placeholder for URL input"
+  },
+  "namePlaceholder": {
+    "message": "이름 (선택)",
+    "description": "Placeholder for name input"
+  },
+  "cancel": {
+    "message": "취소",
+    "description": "Cancel button text"
+  },
+  "add": {
+    "message": "추가",
+    "description": "Add button text"
+  },
+  "delete": {
+    "message": "삭제",
+    "description": "Delete button title"
+  },
+  "timerFocusTime": {
+    "message": "집중 시간",
+    "description": "Timer label for pomodoro focus time"
+  },
+  "timerGeneral": {
+    "message": "타이머",
+    "description": "Timer label for general timer"
+  },
+  "timerElapsed": {
+    "message": "경과 시간",
+    "description": "Timer label for elapsed time"
+  },
+  "errorEnterUrl": {
+    "message": "URL 패턴을 입력하세요",
+    "description": "Error message when URL pattern is empty"
+  },
+  "errorDuplicate": {
+    "message": "이미 추가된 URL입니다",
+    "description": "Error message when URL already exists"
+  },
+  "notificationTitle": {
+    "message": "Focus Mode",
+    "description": "Notification title"
+  },
+  "notificationTabClosed": {
+    "message": "$SITE$ 탭이 닫혔습니다",
+    "description": "Notification message when a tab is closed",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  }
+}

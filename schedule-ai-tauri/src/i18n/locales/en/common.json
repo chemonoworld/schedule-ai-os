@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "brand": "Schedule AI",
+    "today": "Today",
+    "plans": "Plans",
+    "progress": "Progress",
+    "focus": "Focus",
+    "settings": "Settings"
+  },
+  "buttons": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "close": "Close",
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
+  "status": {
+    "loading": "Loading...",
+    "saving": "Saving...",
+    "analyzing": "Analyzing...",
+    "generating": "Generating...",
+    "exporting": "Exporting...",
+    "importing": "Importing...",
+    "checking": "Checking..."
+  },
+  "task": {
+    "complete": "Complete",
+    "completed": "Completed",
+    "delete": "Delete",
+    "addSubtask": "Add subtask",
+    "subtaskPlaceholder": "Add subtask... (Enter to add, Esc to close)",
+    "inProgress": "In Progress"
+  },
+  "modal": {
+    "editTask": "Edit Task",
+    "editSubtask": "Edit Subtask",
+    "editPlan": "Edit Plan",
+    "splitTask": "Split Task"
+  },
+  "form": {
+    "title": "Title",
+    "time": "Time",
+    "location": "Location",
+    "locationPlaceholder": "Enter location (optional)",
+    "description": "Description",
+    "descriptionPlaceholder": "Description (optional)"
+  },
+  "ai": {
+    "analyze": "AI Analyze",
+    "split": "AI Split",
+    "generateTasks": "Generate Today's Tasks"
+  },
+  "days": {
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri",
+    "sat": "Sat"
+  },
+  "months": {
+    "jan": "Jan",
+    "feb": "Feb",
+    "mar": "Mar",
+    "apr": "Apr",
+    "may": "May",
+    "jun": "Jun",
+    "jul": "Jul",
+    "aug": "Aug",
+    "sep": "Sep",
+    "oct": "Oct",
+    "nov": "Nov",
+    "dec": "Dec"
+  }
+}

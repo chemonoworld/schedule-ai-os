@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "title": "Schedule AI - ADHD 친화적 AI 일정 관리",
+    "description": "ADHD를 위한 AI 기반 일정 관리 앱. 자연어 플랜을 구조화된 태스크로 변환하고, 집중 모드와 진행률 추적으로 생산성을 높이세요.",
+    "downloadTitle": "다운로드 - Schedule AI",
+    "downloadDescription": "macOS용 Schedule AI를 다운로드하세요. 무료입니다."
+  },
+  "header": {
+    "features": "기능",
+    "download": "다운로드"
+  },
+  "hero": {
+    "badge": "ADHD를 위한 설계",
+    "title1": "AI 기반 일정",
+    "title2": "관리",
+    "description": "자연어로 작성한 계획을 구조화된 실행 가능한 태스크로 변환하세요. 하드 블로킹으로 집중하고, 진행률을 추적하며, 마침내 일을 완료하세요.",
+    "downloadMac": "macOS용 다운로드",
+    "viewGitHub": "GitHub에서 보기",
+    "footnote": "무료 사용. macOS 12 이상 필요."
+  },
+  "features": {
+    "title": "집중을 위해 만들어진, ADHD를 위한 설계",
+    "subtitle": "모든 기능은 압도당하지 않으면서 일을 완료할 수 있도록 세심하게 제작되었습니다.",
+    "aiParsing": {
+      "title": "AI 플랜 파싱",
+      "description": "자연어로 계획을 작성하세요. AI가 예상 소요 시간과 함께 구조화된 실행 가능한 태스크로 변환합니다."
+    },
+    "hardBlocking": {
+      "title": "포커스 모드",
+      "description": "방해가 되는 앱을 완전히 차단합니다. 집중이 필요할 때 Schedule AI가 차단된 앱을 종료하여 작업에 집중하게 합니다."
+    },
+    "progress": {
+      "title": "진행률 추적",
+      "description": "GitHub 스타일 히트맵, 연속 기록, 일일 완료율로 생산성을 시각화하세요."
+    },
+    "recurring": {
+      "title": "반복 태스크",
+      "description": "자연어로 일간, 주간, 월간 반복 태스크를 설정하세요. '매주 월요일 오전 9시'처럼 입력하면 됩니다."
+    },
+    "multilingual": {
+      "title": "다국어 지원",
+      "description": "선호하는 언어로 Schedule AI를 사용하세요. 현재 영어와 한국어를 지원하며 더 많은 언어가 추가될 예정입니다."
+    },
+    "privacy": {
+      "title": "프라이버시 우선",
+      "description": "데이터는 기기에만 저장됩니다. 언제든지 데이터를 내보내고 가져올 수 있습니다."
+    }
+  },
+  "footer": {
+    "download": "다운로드",
+    "github": "GitHub",
+    "feedback": "피드백",
+    "tagline": "ADHD 커뮤니티를 위해 정성을 담아 만들었습니다."
+  },
+  "download": {
+    "title": "Schedule AI 다운로드",
+    "subtitle": "무료 사용, ADHD를 위한 설계.",
+    "downloadBtn": "다운로드",
+    "noRelease": "아직 릴리즈가 없습니다. 곧 확인해주세요!",
+    "released": "릴리즈",
+    "otherPlatforms": "다른 플랫폼",
+    "detected": "감지됨",
+    "macos": "macOS",
+    "macosDesc": "macOS 12.0 이상 필요",
+    "appleSilicon": "Apple Silicon (M1/M2/M3)",
+    "intel": "Intel",
+    "windows": "Windows",
+    "windowsDesc": "Windows 10 이상",
+    "installer": "설치 프로그램 (.exe)",
+    "portable": "MSI 패키지",
+    "linux": "Linux",
+    "linuxDesc": "Ubuntu, Debian, Fedora 등",
+    "debPackage": "Debian/Ubuntu (.deb)",
+    "appImage": "AppImage",
+    "rpmPackage": "Fedora/RHEL (.rpm)",
+    "notAvailable": "아직 사용 불가",
+    "installation": "설치 방법",
+    "installMacOS": "macOS 설치",
+    "stepMac1": "Mac에 맞는 .dmg 파일을 다운로드하세요",
+    "stepMac2": ".dmg를 열고 Schedule AI를 Applications로 드래그하세요",
+    "stepMac3": "처음 실행 시 우클릭하여 \"열기\"를 선택해 Gatekeeper를 우회하세요",
+    "stepMac4": "설정에서 Claude API 키를 입력하여 AI 기능을 활성화하세요",
+    "installWindows": "Windows 설치",
+    "stepWin1": "설치 프로그램 (.exe) 또는 MSI 패키지를 다운로드하세요",
+    "stepWin2": "설치 프로그램을 실행하고 설치 마법사를 따르세요",
+    "stepWin3": "시작 메뉴에서 Schedule AI를 실행하세요",
+    "stepWin4": "설정에서 Claude API 키를 입력하여 AI 기능을 활성화하세요",
+    "installLinux": "Linux 설치",
+    "stepLinux1": "배포판에 맞는 패키지를 다운로드하세요",
+    "stepLinux2Deb": ".deb: sudo dpkg -i schedule-ai_*.deb",
+    "stepLinux2AppImage": "AppImage: chmod +x *.AppImage && ./*.AppImage",
+    "stepLinux2Rpm": ".rpm: sudo rpm -i schedule-ai_*.rpm",
+    "stepLinux3": "설정에서 Claude API 키를 입력하여 AI 기능을 활성화하세요",
+    "backHome": "홈으로 돌아가기"
+  },
+  "language": {
+    "en": "English",
+    "ko": "한국어"
+  }
+}

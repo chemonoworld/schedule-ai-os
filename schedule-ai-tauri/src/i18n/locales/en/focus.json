@@ -1,0 +1,68 @@
+{
+  "title": "Focus Mode",
+  "subtitle": "When focus mode starts, selected apps will be terminated automatically",
+  "blockedApps": {
+    "title": "Apps to Block",
+    "count": "{{count}} selected",
+    "running": "Running",
+    "searchPlaceholder": "Search apps by name...",
+    "searchHint": "Search to add apps to block",
+    "noResults": "No results found"
+  },
+  "timerType": {
+    "title": "Timer Mode",
+    "none": "None",
+    "noneDesc": "Focus without timer",
+    "timer": "Timer",
+    "timerDesc": "Focus for set duration",
+    "pomodoro": "Pomodoro",
+    "pomodoroDesc": "25min focus + 5min break"
+  },
+  "start": "Start Focus Mode",
+  "stop": "End Focus Mode",
+  "status": {
+    "focusing": "Focusing",
+    "breaking": "On Break"
+  },
+  "tasks": {
+    "title": "Today's Tasks",
+    "progress": "{{completed}}/{{total}} completed",
+    "allDone": "All tasks completed!",
+    "more": "+{{count}} more",
+    "completedSection": "Completed ({{count}})",
+    "navigateHint": "Click to navigate to Today tab"
+  },
+  "notification": {
+    "title": "Focus Mode",
+    "terminated": "{{appName}} has been terminated."
+  },
+  "timer": {
+    "title": "Pomodoro Timer",
+    "focus": "Focus",
+    "shortBreak": "Short Break",
+    "longBreak": "Long Break",
+    "start": "Start",
+    "pause": "Pause",
+    "reset": "Reset",
+    "skip": "Skip",
+    "pomodoroCount": "Pomodoro #{{count}}",
+    "resetCount": "Reset count",
+    "settings": {
+      "title": "Timer Settings",
+      "focusDuration": "Focus Duration (min)",
+      "shortBreakDuration": "Short Break (min)",
+      "longBreakDuration": "Long Break (min)",
+      "longBreakInterval": "Long Break Interval",
+      "save": "Save"
+    },
+    "notification": {
+      "focusComplete": "Focus session complete!",
+      "breakComplete": "Break time over!",
+      "timerComplete": "Timer complete!",
+      "timerDone": "Your set time has ended.",
+      "takeBreak": "Time for a short break.",
+      "backToWork": "Time to get back to work."
+    },
+    "duration": "Duration (min)"
+  }
+}

@@ -1,0 +1,52 @@
+{
+  "title": "Plan Management",
+  "subtitle": "Manage recurring schedules and long-term plans",
+  "recurring": {
+    "title": "Recurring Schedule",
+    "add": "+ Add",
+    "collapse": "Collapse",
+    "placeholder": "e.g., Every Saturday 12-16 from January to February 2026 TOEFL class",
+    "form": {
+      "title": "Title",
+      "titlePlaceholder": "Schedule title",
+      "location": "Location",
+      "locationPlaceholder": "Location (optional)",
+      "repeat": "Repeat",
+      "daily": "Daily",
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "days": "Days",
+      "time": "Time",
+      "period": "Period"
+    },
+    "preview": {
+      "title": "Preview: {{count}} tasks will be created",
+      "generate": "Generate Preview",
+      "collapse": "Collapse",
+      "showMore": "Show {{count}} more",
+      "createTasks": "Create {{count}} Tasks"
+    },
+    "list": {
+      "noEnd": "No end date"
+    },
+    "creating": "Creating..."
+  },
+  "daily": {
+    "title": "Daily Plan",
+    "placeholder": "Enter your plans... (e.g., 'Study Korean, Study English, Study Math')",
+    "create": "Create Plan",
+    "analyze": "AI Analyze",
+    "generate": "Generate Today's Tasks"
+  },
+  "list": {
+    "empty": {
+      "title": "No plans yet",
+      "hint": "Create a plan above and AI will help you break it down"
+    }
+  },
+  "editModal": {
+    "title": "Edit Plan",
+    "titlePlaceholder": "Plan title",
+    "descriptionPlaceholder": "Description (optional)"
+  }
+}

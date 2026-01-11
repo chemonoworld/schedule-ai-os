@@ -1,0 +1,68 @@
+{
+  "title": "Focus Mode",
+  "subtitle": "집중 모드를 시작하면 선택한 앱이 자동으로 종료됩니다",
+  "blockedApps": {
+    "title": "차단할 앱",
+    "count": "{{count}}개 선택됨",
+    "running": "실행 중",
+    "searchPlaceholder": "앱 이름으로 검색...",
+    "searchHint": "검색하여 차단할 앱을 추가하세요",
+    "noResults": "검색 결과가 없습니다"
+  },
+  "timerType": {
+    "title": "타이머 모드",
+    "none": "없음",
+    "noneDesc": "타이머 없이 집중",
+    "timer": "타이머",
+    "timerDesc": "지정 시간 집중",
+    "pomodoro": "뽀모도로",
+    "pomodoroDesc": "25분 집중 + 5분 휴식"
+  },
+  "start": "집중 모드 시작",
+  "stop": "집중 모드 종료",
+  "status": {
+    "focusing": "집중 중",
+    "breaking": "휴식 중"
+  },
+  "tasks": {
+    "title": "오늘의 할 일",
+    "progress": "{{completed}}/{{total}} 완료",
+    "allDone": "모든 태스크를 완료했습니다!",
+    "more": "+{{count}}개 더",
+    "completedSection": "완료됨 ({{count}})",
+    "navigateHint": "클릭하여 Today 탭으로 이동"
+  },
+  "notification": {
+    "title": "집중 모드",
+    "terminated": "{{appName}}이(가) 종료되었습니다."
+  },
+  "timer": {
+    "title": "뽀모도로 타이머",
+    "focus": "집중",
+    "shortBreak": "짧은 휴식",
+    "longBreak": "긴 휴식",
+    "start": "시작",
+    "pause": "일시정지",
+    "reset": "리셋",
+    "skip": "건너뛰기",
+    "pomodoroCount": "{{count}}번째 뽀모도로",
+    "resetCount": "카운트 리셋",
+    "settings": {
+      "title": "타이머 설정",
+      "focusDuration": "집중 시간 (분)",
+      "shortBreakDuration": "짧은 휴식 (분)",
+      "longBreakDuration": "긴 휴식 (분)",
+      "longBreakInterval": "긴 휴식 간격",
+      "save": "저장"
+    },
+    "notification": {
+      "focusComplete": "집중 시간 완료!",
+      "breakComplete": "휴식 시간 완료!",
+      "timerComplete": "타이머 완료!",
+      "timerDone": "설정한 시간이 끝났습니다.",
+      "takeBreak": "잠시 휴식을 취하세요.",
+      "backToWork": "다시 집중할 시간입니다."
+    },
+    "duration": "시간 (분)"
+  }
+}

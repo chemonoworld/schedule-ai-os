@@ -1,0 +1,92 @@
+{
+  "extName": {
+    "message": "Schedule AI Focus",
+    "description": "Extension name"
+  },
+  "extDescription": {
+    "message": "Block distracting websites with Focus Mode integration",
+    "description": "Extension description"
+  },
+  "statusConnecting": {
+    "message": "Connecting...",
+    "description": "Connection status: connecting"
+  },
+  "statusConnected": {
+    "message": "Desktop Connected",
+    "description": "Connection status: connected to desktop"
+  },
+  "statusStandalone": {
+    "message": "Standalone Mode",
+    "description": "Connection status: standalone mode"
+  },
+  "focusModeStart": {
+    "message": "Start Focus Mode",
+    "description": "Button text to start focus mode"
+  },
+  "focusModeStop": {
+    "message": "Stop Focus Mode",
+    "description": "Button text to stop focus mode"
+  },
+  "blockedUrls": {
+    "message": "Blocked URLs",
+    "description": "Section header for blocked URLs"
+  },
+  "addUrl": {
+    "message": "Add URL",
+    "description": "Button title to add URL"
+  },
+  "urlPlaceholder": {
+    "message": "e.g., tiktok.com",
+    "description": "Placeholder for URL input"
+  },
+  "namePlaceholder": {
+    "message": "Name (optional)",
+    "description": "Placeholder for name input"
+  },
+  "cancel": {
+    "message": "Cancel",
+    "description": "Cancel button text"
+  },
+  "add": {
+    "message": "Add",
+    "description": "Add button text"
+  },
+  "delete": {
+    "message": "Delete",
+    "description": "Delete button title"
+  },
+  "timerFocusTime": {
+    "message": "Focus Time",
+    "description": "Timer label for pomodoro focus time"
+  },
+  "timerGeneral": {
+    "message": "Timer",
+    "description": "Timer label for general timer"
+  },
+  "timerElapsed": {
+    "message": "Elapsed Time",
+    "description": "Timer label for elapsed time"
+  },
+  "errorEnterUrl": {
+    "message": "Please enter a URL pattern",
+    "description": "Error message when URL pattern is empty"
+  },
+  "errorDuplicate": {
+    "message": "URL already exists",
+    "description": "Error message when URL already exists"
+  },
+  "notificationTitle": {
+    "message": "Focus Mode",
+    "description": "Notification title"
+  },
+  "notificationTabClosed": {
+    "message": "$SITE$ tab has been closed",
+    "description": "Notification message when a tab is closed",
+    "placeholders": {
+      "site": {
+        "content": "$1",
+        "example": "YouTube"
+      }
+    }
+  }
+}

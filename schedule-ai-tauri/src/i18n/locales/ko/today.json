@@ -1,0 +1,41 @@
+{
+  "title": "Today",
+  "dateLabel": "Today",
+  "progress": {
+    "completed": "{{completed}}/{{total}} 완료"
+  },
+  "empty": {
+    "title": "이 날에 예정된 태스크가 없습니다",
+    "hint": "아래에서 태스크를 추가하거나 AI가 플랜에서 생성하도록 하세요"
+  },
+  "addTask": {
+    "placeholder": "새 태스크 추가...",
+    "button": "추가"
+  },
+  "export": {
+    "markdown": "마크다운으로 내보내기",
+    "json": "JSON으로 내보내기",
+    "md": "MD",
+    "jsonShort": "JSON"
+  },
+  "taskList": {
+    "addSubtask": "서브태스크 추가"
+  },
+  "editModal": {
+    "title": "태스크 수정",
+    "titleLabel": "제목",
+    "timeLabel": "시간",
+    "locationLabel": "장소",
+    "locationPlaceholder": "장소 입력 (선택)"
+  },
+  "splitModal": {
+    "title": "태스크 쪼개기",
+    "subtaskPlaceholder": "서브태스크 {{index}}",
+    "addSubtask": "+ 서브태스크 추가",
+    "split": "쪼개기"
+  },
+  "subtaskModal": {
+    "title": "서브태스크 수정",
+    "placeholder": "서브태스크 제목"
+  }
+}

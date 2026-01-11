@@ -1,0 +1,100 @@
+{
+  "metadata": {
+    "title": "Schedule AI - ADHD-friendly AI Schedule Management",
+    "description": "An AI-powered schedule management app designed for ADHD. Transform your plans into actionable tasks with intelligent parsing, focus mode, and progress tracking.",
+    "downloadTitle": "Download - Schedule AI",
+    "downloadDescription": "Download Schedule AI for macOS. Free to use."
+  },
+  "header": {
+    "features": "Features",
+    "download": "Download"
+  },
+  "hero": {
+    "badge": "Designed for ADHD",
+    "title1": "AI-Powered Schedule",
+    "title2": "Management",
+    "description": "Transform your natural language plans into structured, actionable tasks. Stay focused with hard blocking, track your progress, and finally get things done.",
+    "downloadMac": "Download for macOS",
+    "viewGitHub": "View on GitHub",
+    "footnote": "Free to use. macOS 12+ required."
+  },
+  "features": {
+    "title": "Built for focus, designed for ADHD",
+    "subtitle": "Every feature is carefully crafted to help you stay on track and get things done without feeling overwhelmed.",
+    "aiParsing": {
+      "title": "AI Plan Parsing",
+      "description": "Write your plans in natural language. Our AI transforms them into structured, actionable tasks with estimated durations."
+    },
+    "hardBlocking": {
+      "title": "Hard Blocking Focus Mode",
+      "description": "Block distracting apps completely. When you need to focus, Schedule AI forces you to stay on task by terminating blocked apps."
+    },
+    "progress": {
+      "title": "Progress Tracking",
+      "description": "Visualize your productivity with GitHub-style heatmaps, streak tracking, and daily completion rates."
+    },
+    "recurring": {
+      "title": "Recurring Tasks",
+      "description": "Set up daily, weekly, or monthly recurring tasks with natural language. 'Every Monday at 9am' just works."
+    },
+    "multilingual": {
+      "title": "Multilingual Support",
+      "description": "Use Schedule AI in your preferred language. Currently supporting English and Korean with more coming soon."
+    },
+    "privacy": {
+      "title": "Privacy First",
+      "description": "Your data stays on your device. Export and import your data anytime."
+    }
+  },
+  "footer": {
+    "download": "Download",
+    "github": "GitHub",
+    "feedback": "Feedback",
+    "tagline": "Made with care for the ADHD community."
+  },
+  "download": {
+    "title": "Download Schedule AI",
+    "subtitle": "Free to use, designed for ADHD.",
+    "downloadBtn": "Download",
+    "noRelease": "No releases available yet. Check back soon!",
+    "released": "Released",
+    "otherPlatforms": "Other Platforms",
+    "detected": "Detected",
+    "macos": "macOS",
+    "macosDesc": "Requires macOS 12.0 or later",
+    "appleSilicon": "Apple Silicon (M1/M2/M3)",
+    "intel": "Intel",
+    "windows": "Windows",
+    "windowsDesc": "Windows 10 or later",
+    "installer": "Installer (.exe)",
+    "portable": "MSI Package",
+    "linux": "Linux",
+    "linuxDesc": "Ubuntu, Debian, Fedora, and more",
+    "debPackage": "Debian/Ubuntu (.deb)",
+    "appImage": "AppImage",
+    "rpmPackage": "Fedora/RHEL (.rpm)",
+    "notAvailable": "Not available yet",
+    "installation": "Installation",
+    "installMacOS": "macOS Installation",
+    "stepMac1": "Download the .dmg file for your Mac",
+    "stepMac2": "Open the .dmg and drag Schedule AI to Applications",
+    "stepMac3": "On first launch, right-click and select \"Open\" to bypass Gatekeeper",
+    "stepMac4": "Enter your Claude API key in Settings to enable AI features",
+    "installWindows": "Windows Installation",
+    "stepWin1": "Download the installer (.exe) or MSI package",
+    "stepWin2": "Run the installer and follow the setup wizard",
+    "stepWin3": "Launch Schedule AI from the Start menu",
+    "stepWin4": "Enter your Claude API key in Settings to enable AI features",
+    "installLinux": "Linux Installation",
+    "stepLinux1": "Download the appropriate package for your distribution",
+    "stepLinux2Deb": "For .deb: sudo dpkg -i schedule-ai_*.deb",
+    "stepLinux2AppImage": "For AppImage: chmod +x *.AppImage && ./*.AppImage",
+    "stepLinux2Rpm": "For .rpm: sudo rpm -i schedule-ai_*.rpm",
+    "stepLinux3": "Enter your Claude API key in Settings to enable AI features",
+    "backHome": "Back to Home"
+  },
+  "language": {
+    "en": "English",
+    "ko": "한국어"
+  }
+}

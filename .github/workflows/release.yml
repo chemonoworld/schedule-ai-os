@@ -1,0 +1,112 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # macOS
+          - platform: macos-latest
+            args: --target aarch64-apple-darwin
+            rust_targets: aarch64-apple-darwin
+          - platform: macos-latest
+            args: --target x86_64-apple-darwin
+            rust_targets: x86_64-apple-darwin
+          # Windows
+          - platform: windows-latest
+            args: ""
+            rust_targets: ""
+          # Linux
+          - platform: ubuntu-22.04
+            args: ""
+            rust_targets: ""
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.rust_targets }}
+
+      # Linux dependencies
+      - name: Install Linux dependencies
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build workspace packages
+        run: pnpm --filter "@schedule-ai/core" --filter "@schedule-ai/llm-client" --filter "@schedule-ai/ui" build
+
+      - name: Build and Release
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: ${{ github.ref_name }}
+          releaseName: 'Schedule AI ${{ github.ref_name }}'
+          releaseBody: |
+            ## What's Changed
+            See the commits for details.
+
+            ## Downloads
+
+            ### macOS
+            - **Apple Silicon (M1/M2/M3)**: `Schedule.AI_*_aarch64.dmg`
+            - **Intel**: `Schedule.AI_*_x64.dmg`
+
+            ### Windows
+            - **Installer**: `Schedule.AI_*_x64-setup.exe`
+            - **Portable**: `Schedule.AI_*_x64_en-US.msi`
+
+            ### Linux
+            - **Debian/Ubuntu**: `schedule-ai_*_amd64.deb`
+            - **AppImage**: `schedule-ai_*_amd64.AppImage`
+
+            ## Installation
+
+            ### macOS
+            1. Download the .dmg file for your Mac
+            2. Open the .dmg and drag Schedule AI to Applications
+            3. On first launch, right-click and select "Open" to bypass Gatekeeper
+
+            ### Windows
+            1. Download and run the installer (.exe)
+            2. Follow the installation wizard
+
+            ### Linux
+            ```bash
+            # Debian/Ubuntu
+            sudo dpkg -i schedule-ai_*_amd64.deb
+
+            # AppImage
+            chmod +x schedule-ai_*_amd64.AppImage
+            ./schedule-ai_*_amd64.AppImage
+            ```
+          releaseDraft: true
+          prerelease: false
+          projectPath: schedule-ai-tauri
+          args: ${{ matrix.args }}

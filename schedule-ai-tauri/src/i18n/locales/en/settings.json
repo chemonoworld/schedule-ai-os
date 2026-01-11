@@ -1,0 +1,75 @@
+{
+  "title": "Settings",
+  "language": {
+    "title": "Language",
+    "description": "Select your preferred language for the app interface.",
+    "options": {
+      "en": "English",
+      "ko": "한국어"
+    }
+  },
+  "apiKey": {
+    "title": "Claude API Key",
+    "description": "An Anthropic API key is required to use AI features.",
+    "getKey": "Get API Key",
+    "show": "Show",
+    "hide": "Hide",
+    "placeholder": "sk-ant-...",
+    "status": {
+      "notSet": "API key not set",
+      "saved": "API key saved",
+      "checking": "Checking key...",
+      "valid": "API key is valid",
+      "invalid": "API key is invalid"
+    }
+  },
+  "shortcut": {
+    "title": "Global Shortcut",
+    "description": "Set a shortcut to quickly open and close the app.",
+    "toggle": "Toggle App:",
+    "placeholder": "Press a key...",
+    "tabShortcuts": "Tab Shortcuts",
+    "tabShortcutsDesc": "Customize keyboard shortcuts for tab navigation.",
+    "tabShortcutsHint": "key to switch tabs"
+  },
+  "planRules": {
+    "title": "Plan Rules",
+    "description": "Set personal rules for AI to reference when analyzing plans or generating tasks.",
+    "example": "e.g., \"I focus better in the morning\", \"I prefer light tasks after lunch\"",
+    "placeholder": "e.g., I prefer to do creative work in the morning...",
+    "saved": "Saved"
+  },
+  "export": {
+    "title": "Data Export / Import",
+    "description": "Export or import data in Markdown or JSON format.",
+    "hint": "Markdown exports can be used in Obsidian, Notion, etc.",
+    "exportSection": "Export",
+    "importSection": "Import",
+    "dateRange": "Date Range:",
+    "presets": {
+      "7days": "Last 7 days",
+      "30days": "Last 30 days",
+      "90days": "Last 90 days"
+    },
+    "buttons": {
+      "json": "Export as JSON",
+      "markdown": "Export as Markdown",
+      "import": "Import from JSON"
+    },
+    "info": "Plan: {{plans}} (all) / Task: {{tasks}} (selected period)",
+    "importHint": "Data will be added to existing data. Duplicates may occur.",
+    "success": {
+      "export": "Exported {{plans}} Plans, {{tasks}} Tasks ({{start}} ~ {{end}})",
+      "exportMarkdown": "Exported {{plans}} Plans, {{tasks}} Tasks as Markdown",
+      "import": "Imported {{plans}} Plans, {{tasks}} Tasks"
+    },
+    "error": {
+      "export": "Export failed: {{error}}",
+      "import": "Import failed: {{error}}"
+    },
+    "dialog": {
+      "selectFolder": "Select export folder",
+      "selectFile": "Select JSON file"
+    }
+  }
+}

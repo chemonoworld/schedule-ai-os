@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Schedule AI Focus</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <!-- 헤더 -->
+    <header id="header">
+      <h1>Schedule AI Focus</h1>
+      <div id="connection-status">
+        <span id="status-dot"></span>
+        <span id="status-text" data-i18n="statusConnecting"></span>
+      </div>
+    </header>
+
+    <!-- Focus Mode 컨트롤 -->
+    <section id="focus-control">
+      <div id="timer-display">
+        <span id="timer">00:00:00</span>
+        <span id="timer-label"></span>
+      </div>
+
+      <button id="toggle-btn" class="btn-primary" disabled>
+        <span id="toggle-text" data-i18n="focusModeStart"></span>
+      </button>
+    </section>
+
+    <!-- 차단 URL 목록 -->
+    <section id="blocked-urls-section">
+      <div id="urls-header">
+        <h2 data-i18n="blockedUrls"></h2>
+        <button id="add-url-btn" class="btn-icon" data-i18n-title="addUrl">+</button>
+      </div>
+
+      <div id="url-list"></div>
+
+      <!-- URL 추가 폼 (숨김) -->
+      <div id="add-url-form" class="hidden">
+        <input type="text" id="new-url-input" data-i18n-placeholder="urlPlaceholder">
+        <input type="text" id="new-url-name" data-i18n-placeholder="namePlaceholder">
+        <div id="form-buttons">
+          <button id="cancel-add-btn" class="btn-secondary" data-i18n="cancel"></button>
+          <button id="confirm-add-btn" class="btn-primary" data-i18n="add"></button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 에러 표시 -->
+    <div id="error-message" class="hidden"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

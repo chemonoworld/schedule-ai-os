@@ -1,0 +1,79 @@
+{
+  "nav": {
+    "brand": "Schedule AI",
+    "today": "Today",
+    "plans": "Plans",
+    "progress": "Progress",
+    "focus": "Focus",
+    "settings": "Settings"
+  },
+  "buttons": {
+    "save": "저장",
+    "cancel": "취소",
+    "delete": "삭제",
+    "add": "추가",
+    "edit": "수정",
+    "close": "닫기",
+    "collapse": "접기",
+    "expand": "펼치기"
+  },
+  "status": {
+    "loading": "로딩 중...",
+    "saving": "저장 중...",
+    "analyzing": "분석 중...",
+    "generating": "생성 중...",
+    "exporting": "내보내는 중...",
+    "importing": "가져오는 중...",
+    "checking": "확인 중..."
+  },
+  "task": {
+    "complete": "완료",
+    "completed": "완료됨",
+    "delete": "삭제",
+    "addSubtask": "서브태스크 추가",
+    "subtaskPlaceholder": "서브태스크 추가... (Enter로 추가, Esc로 닫기)",
+    "inProgress": "진행중"
+  },
+  "modal": {
+    "editTask": "태스크 수정",
+    "editSubtask": "서브태스크 수정",
+    "editPlan": "계획 수정",
+    "splitTask": "태스크 쪼개기"
+  },
+  "form": {
+    "title": "제목",
+    "time": "시간",
+    "location": "장소",
+    "locationPlaceholder": "장소 입력 (선택)",
+    "description": "설명",
+    "descriptionPlaceholder": "설명 (선택사항)"
+  },
+  "ai": {
+    "analyze": "✨ AI 분석",
+    "split": "✨ AI로 쪼개기",
+    "generateTasks": "✨ 오늘 할 일 생성"
+  },
+  "days": {
+    "sun": "일",
+    "mon": "월",
+    "tue": "화",
+    "wed": "수",
+    "thu": "목",
+    "fri": "금",
+    "sat": "토"
+  },
+  "months": {
+    "jan": "1월",
+    "feb": "2월",
+    "mar": "3월",
+    "apr": "4월",
+    "may": "5월",
+    "jun": "6월",
+    "jul": "7월",
+    "aug": "8월",
+    "sep": "9월",
+    "oct": "10월",
+    "nov": "11월",
+    "dec": "12월"
+  }
+}

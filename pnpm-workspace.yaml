@@ -1,0 +1,11 @@
+packages:
+  - schedule-ai-tauri
+  - schedule-ai-server
+  - schedule-ai-web
+  - packages/*
+
+ignoredBuiltDependencies:
+  - esbuild
+
+onlyBuiltDependencies:
+  - esbuild

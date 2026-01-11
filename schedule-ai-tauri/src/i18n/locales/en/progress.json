@@ -1,0 +1,31 @@
+{
+  "title": "Progress Tracking",
+  "streak": {
+    "label": "day streak",
+    "active": "Great! You've achieved 50%+ for {{count}} days in a row!",
+    "inactive": "Complete tasks to start your streak!"
+  },
+  "year": "{{year}}",
+  "heatmap": {
+    "legend": {
+      "less": "Less",
+      "more": "More"
+    },
+    "levels": {
+      "0": "0% completed",
+      "1": "1-24% completed",
+      "2": "25-49% completed",
+      "3": "50-74% completed",
+      "4": "75-100% completed"
+    },
+    "tooltip": {
+      "tasks": "{{count}} tasks",
+      "rate": "{{rate}}% completion"
+    }
+  },
+  "stats": {
+    "activeDays": "Active Days",
+    "totalTasks": "Total Tasks",
+    "achievementRate": "50%+ Achievement"
+  }
+}

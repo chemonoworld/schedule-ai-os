@@ -1,0 +1,31 @@
+{
+  "title": "Progress Tracking",
+  "streak": {
+    "label": "일 연속",
+    "active": "멋져요! {{count}}일 연속으로 50% 이상 달성했어요!",
+    "inactive": "태스크를 완료하고 스트릭을 시작하세요!"
+  },
+  "year": "{{year}}년",
+  "heatmap": {
+    "legend": {
+      "less": "Less",
+      "more": "More"
+    },
+    "levels": {
+      "0": "0% 완료",
+      "1": "1-24% 완료",
+      "2": "25-49% 완료",
+      "3": "50-74% 완료",
+      "4": "75-100% 완료"
+    },
+    "tooltip": {
+      "tasks": "{{count}}개 태스크",
+      "rate": "{{rate}}% 완료"
+    }
+  },
+  "stats": {
+    "activeDays": "활동일",
+    "totalTasks": "총 태스크",
+    "achievementRate": "50%+ 달성률"
+  }
+}
