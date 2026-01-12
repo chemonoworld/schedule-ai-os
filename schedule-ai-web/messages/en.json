@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "Schedule AI - ADHD-friendly AI Schedule Management",
-    "description": "An AI-powered schedule management app designed for ADHD. Transform your plans into actionable tasks with intelligent parsing, focus mode, and progress tracking.",
+    "title": "Schedule AI - Focus Tool for Developers",
+    "description": "A focus tool for developers drowning in context switches. Block distractions, let AI prioritize, and actually finish your work.",
     "downloadTitle": "Download - Schedule AI",
     "downloadDescription": "Download Schedule AI for macOS. Free to use."
   },
@@ -10,17 +10,17 @@
     "download": "Download"
   },
   "hero": {
-    "badge": "Designed for ADHD",
-    "title1": "AI-Powered Schedule",
-    "title2": "Management",
-    "description": "Transform your natural language plans into structured, actionable tasks. Stay focused with hard blocking, track your progress, and finally get things done.",
+    "badge": "Built for Focus",
+    "title1": "Unfinished tasks",
+    "title2": "piling up?",
+    "description": "A focus tool for developers drowning in context switches. Block distractions, let AI prioritize, and actually finish what you started.",
     "downloadMac": "Download for macOS",
     "viewGitHub": "View on GitHub",
     "footnote": "Free to use. macOS 12+ required."
   },
   "features": {
-    "title": "Built for focus, designed for ADHD",
-    "subtitle": "Every feature is carefully crafted to help you stay on track and get things done without feeling overwhelmed.",
+    "title": "Context switching is killing your productivity",
+    "subtitle": "Schedule AI blocks distractions at the source so you can focus on one thing at a time.",
     "aiParsing": {
       "title": "AI Plan Parsing",
       "description": "Write your plans in natural language. Our AI transforms them into structured, actionable tasks with estimated durations."
@@ -50,11 +50,11 @@
     "download": "Download",
     "github": "GitHub",
     "feedback": "Feedback",
-    "tagline": "Made with care for the ADHD community."
+    "tagline": "Built for developers who want to focus."
   },
   "download": {
     "title": "Download Schedule AI",
-    "subtitle": "Free to use, designed for ADHD.",
+    "subtitle": "Free. Built for focus.",
     "downloadBtn": "Download",
     "noRelease": "No releases available yet. Check back soon!",
     "released": "Released",
@@ -96,5 +96,69 @@
   "language": {
     "en": "English",
     "ko": "한국어"
+  },
+  "showcase": {
+    "title": "Experience Every Feature",
+    "subtitle": "Explore how Schedule AI helps you stay focused and productive",
+    "tabs": {
+      "today": "Today",
+      "focus": "Focus",
+      "plans": "Plans",
+      "progress": "Progress"
+    },
+    "today": {
+      "title": "Quick Task Management",
+      "description": "Swipe to complete tasks instantly. No friction, just flow. Add tasks naturally and watch them organize themselves."
+    },
+    "focus": {
+      "title": "Hard Blocking Focus Mode",
+      "description": "When you need to focus, we mean it. Distracting apps are terminated, not just hidden. Pomodoro timer keeps you on track."
+    },
+    "plans": {
+      "title": "AI-Powered Planning",
+      "description": "Write your plans in plain English. Claude AI understands your intent and creates structured, timed tasks automatically."
+    },
+    "progress": {
+      "title": "Visual Progress Tracking",
+      "description": "Your productivity story, visualized. GitHub-style heatmaps show your journey. Streaks keep you motivated."
+    }
+  },
+  "howItWorks": {
+    "title": "Simplify your complex day",
+    "subtitle": "Turn mental chaos into structured action plans",
+    "step1": {
+      "title": "Brain dump",
+      "description": "Just write whatever comes to mind—tasks, meetings, ideas."
+    },
+    "step2": {
+      "title": "AI organizes",
+      "description": "Claude adds priorities and time estimates."
+    },
+    "step3": {
+      "title": "Focus one by one",
+      "description": "Block distractions and finish tasks one at a time."
+    }
+  },
+  "adhd": {
+    "title": "Reclaim your focus",
+    "subtitle": "Lost among dozens of tabs, endless notifications, and parallel projects.",
+    "card1": {
+      "title": "Hard block distracting apps",
+      "description": "YouTube, Slack won't even open. System-level blocking."
+    },
+    "card2": {
+      "title": "AI decides priorities",
+      "description": "No more \"what should I do first?\" AI organizes your tasks."
+    },
+    "card3": {
+      "title": "Visualize progress",
+      "description": "See your completed work stack up visually."
+    }
+  },
+  "cta": {
+    "title": "Actually finish your work today",
+    "subtitle": "Free. No account needed. Data stays local.",
+    "button": "Download for macOS",
+    "footnote": "macOS 12+ required"
   }
 }

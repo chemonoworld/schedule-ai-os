@@ -368,6 +368,8 @@ function DownloadLinks({
         <div className="space-y-3">
           <a
             href={selectedAsset.asset.url}
+            target="_blank"
+            rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-6 py-3 rounded-full font-medium hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors"
           >
             <DownloadIcon />
@@ -391,6 +393,8 @@ function DownloadLinks({
         <a
           key={label}
           href={asset!.url}
+          target="_blank"
+          rel="noopener noreferrer"
           className={`flex items-center justify-between gap-4 ${
             isPrimary
               ? "bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-3 rounded-lg hover:bg-zinc-700 dark:hover:bg-zinc-300"

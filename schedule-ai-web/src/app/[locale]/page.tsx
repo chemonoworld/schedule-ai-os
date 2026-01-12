@@ -1,12 +1,25 @@
-import { Header, Hero, Features, Footer } from "@/components";
+import {
+  Header,
+  HeroEnhanced,
+  AppShowcase,
+  HowItWorks,
+  Features,
+  ADHDFocused,
+  FinalCTA,
+  Footer,
+} from "@/components";
 
 export default function Home() {
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-white dark:bg-zinc-950">
       <Header />
       <main>
-        <Hero />
+        <HeroEnhanced />
+        <AppShowcase />
+        <HowItWorks />
         <Features />
+        <ADHDFocused />
+        <FinalCTA />
       </main>
       <Footer />
     </div>

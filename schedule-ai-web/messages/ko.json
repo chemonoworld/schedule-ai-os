@@ -1,7 +1,7 @@
 {
   "metadata": {
-    "title": "Schedule AI - ADHD 친화적 AI 일정 관리",
-    "description": "ADHD를 위한 AI 기반 일정 관리 앱. 자연어 플랜을 구조화된 태스크로 변환하고, 집중 모드와 진행률 추적으로 생산성을 높이세요.",
+    "title": "Schedule AI - 개발자를 위한 집중 도구",
+    "description": "컨텍스트 스위칭에 지친 개발자를 위한 집중 도구. 산만함을 차단하고, AI가 우선순위를 정리하고, 오늘 할 일을 끝내세요.",
     "downloadTitle": "다운로드 - Schedule AI",
     "downloadDescription": "macOS용 Schedule AI를 다운로드하세요. 무료입니다."
   },
@@ -10,17 +10,17 @@
     "download": "다운로드"
   },
   "hero": {
-    "badge": "ADHD를 위한 설계",
-    "title1": "AI 기반 일정",
-    "title2": "관리",
-    "description": "자연어로 작성한 계획을 구조화된 실행 가능한 태스크로 변환하세요. 하드 블로킹으로 집중하고, 진행률을 추적하며, 마침내 일을 완료하세요.",
+    "badge": "집중을 위한 설계",
+    "title1": "끝내지 못한 일들이",
+    "title2": "쌓여가고 있나요?",
+    "description": "컨텍스트 스위칭에 지친 개발자를 위한 집중 도구. 산만함을 차단하고, AI가 우선순위를 정리하고, 오늘 할 일을 끝내세요.",
     "downloadMac": "macOS용 다운로드",
     "viewGitHub": "GitHub에서 보기",
     "footnote": "무료 사용. macOS 12 이상 필요."
   },
   "features": {
-    "title": "집중을 위해 만들어진, ADHD를 위한 설계",
-    "subtitle": "모든 기능은 압도당하지 않으면서 일을 완료할 수 있도록 세심하게 제작되었습니다.",
+    "title": "컨텍스트 스위칭이 당신의 생산성을 죽이고 있습니다",
+    "subtitle": "Schedule AI는 산만함을 원천 차단하고, 하나의 작업에 집중할 수 있도록 설계되었습니다.",
     "aiParsing": {
       "title": "AI 플랜 파싱",
       "description": "자연어로 계획을 작성하세요. AI가 예상 소요 시간과 함께 구조화된 실행 가능한 태스크로 변환합니다."
@@ -50,11 +50,11 @@
     "download": "다운로드",
     "github": "GitHub",
     "feedback": "피드백",
-    "tagline": "ADHD 커뮤니티를 위해 정성을 담아 만들었습니다."
+    "tagline": "집중하고 싶은 개발자를 위해 만들었습니다."
   },
   "download": {
     "title": "Schedule AI 다운로드",
-    "subtitle": "무료 사용, ADHD를 위한 설계.",
+    "subtitle": "무료. 집중을 위한 설계.",
     "downloadBtn": "다운로드",
     "noRelease": "아직 릴리즈가 없습니다. 곧 확인해주세요!",
     "released": "릴리즈",
@@ -96,5 +96,69 @@
   "language": {
     "en": "English",
     "ko": "한국어"
+  },
+  "showcase": {
+    "title": "모든 기능을 경험하세요",
+    "subtitle": "Schedule AI가 어떻게 집중력과 생산성을 높이는지 살펴보세요",
+    "tabs": {
+      "today": "오늘",
+      "focus": "집중",
+      "plans": "계획",
+      "progress": "진행률"
+    },
+    "today": {
+      "title": "빠른 작업 관리",
+      "description": "스와이프로 즉시 작업을 완료하세요. 마찰 없이 자연스럽게. 작업을 추가하면 자동으로 정리됩니다."
+    },
+    "focus": {
+      "title": "완전 차단 집중 모드",
+      "description": "집중이 필요할 때, 진심입니다. 방해 앱은 숨겨지는 게 아니라 종료됩니다. 포모도로 타이머가 페이스를 유지해줍니다."
+    },
+    "plans": {
+      "title": "AI 기반 계획 수립",
+      "description": "평소처럼 계획을 작성하세요. Claude AI가 의도를 파악하고 시간이 배정된 구조화된 작업을 자동으로 생성합니다."
+    },
+    "progress": {
+      "title": "시각적 진행률 추적",
+      "description": "당신의 생산성 이야기를 시각화합니다. GitHub 스타일 히트맵이 여정을 보여주고, 연속 기록이 동기를 부여합니다."
+    }
+  },
+  "howItWorks": {
+    "title": "복잡한 하루를 단순하게",
+    "subtitle": "머릿속 혼란을 구조화된 실행 계획으로",
+    "step1": {
+      "title": "생각 쏟아내기",
+      "description": "오늘 할 일, 회의, 떠오르는 것들을 그냥 적으세요."
+    },
+    "step2": {
+      "title": "AI 정리",
+      "description": "Claude가 우선순위와 예상 시간을 붙여 정리합니다."
+    },
+    "step3": {
+      "title": "하나씩 집중",
+      "description": "방해 차단하고, 한 작업씩 끝내세요."
+    }
+  },
+  "adhd": {
+    "title": "다시 집중할 수 있습니다",
+    "subtitle": "수십 개의 탭, 끊임없는 알림, 동시에 돌아가는 프로젝트들 사이에서 길을 잃었다면.",
+    "card1": {
+      "title": "방해 앱 원천 차단",
+      "description": "유튜브, 슬랙이 열리지 않습니다. 시스템 레벨 차단."
+    },
+    "card2": {
+      "title": "AI가 우선순위 결정",
+      "description": "\"뭐부터 하지?\" 고민 끝. AI가 할 일을 정리해줍니다."
+    },
+    "card3": {
+      "title": "진행 상황 시각화",
+      "description": "끝낸 일이 쌓이는 걸 눈으로 확인하세요."
+    }
+  },
+  "cta": {
+    "title": "오늘, 진짜로 일을 끝내보세요",
+    "subtitle": "무료. 계정 필요 없음. 로컬 저장.",
+    "button": "macOS용 다운로드",
+    "footnote": "macOS 12 이상 필요"
   }
 }
