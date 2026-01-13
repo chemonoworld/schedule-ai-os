@@ -64,3 +64,6 @@ temp
 
 # Claude Code
 .claude
+
+# Chrome Extension
+chrome-extension/build

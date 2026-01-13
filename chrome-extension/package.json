@@ -1,0 +1,10 @@
+{
+    "name": "@schedule-ai/chrome-extension",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Schedule AI Focus Mode Chrome Extension",
+    "scripts": {
+        "build": "node scripts/build.mjs",
+        "clean": "rm -rf ./build"
+    }
+}
