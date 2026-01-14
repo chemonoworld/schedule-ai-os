@@ -15,12 +15,12 @@
 | 2 | [02_server-calendar-api](./02_server-calendar-api.md) | ✅ 완료 | 100% |
 | 3 | [03_desktop-integration](./03_desktop-integration.md) | ✅ 완료 | 100% |
 | 4 | [04_today-integration](./04_today-integration.md) | ✅ 완료 | 100% |
-| 5 | 05_progress-integration | 대기 | 0% |
+| 5 | [05_progress-integration](./05_progress-integration.md) | ✅ 완료 | 100% |
 | 6 | 06_settings-management | 대기 | 0% |
 | 7 | 07_cleanup-local-oauth | 대기 | 0% |
 
 ## 전체 완료율
-- **57%** (4/7 서브태스크 완료)
+- **71%** (5/7 서브태스크 완료)
 
 ## 최근 업데이트
 
@@ -65,14 +65,25 @@
   - 날짜 변경 시 자동 이벤트 동기화
   - CSS 스타일 추가
   - TypeScript/Rust 빌드 성공
+- **05_progress-integration 완료**:
+  - HeatmapData 타입 확장 (eventCount, hasEvents 필드)
+  - calendarStore에 syncEventsForYear, getEventCountsByDate 메서드 추가
+  - Progress 탭 히트맵에 캘린더 이벤트 통합
+    - 이벤트가 있는 날짜에 파란색 점 표시
+    - 툴팁에 이벤트 수 표시
+    - 활성 일수 계산에 이벤트 포함
+  - 통계 섹션에 "이벤트" 통계 카드 추가 (캘린더 연결 시)
+  - CSS 스타일 추가 (event-dot, has-events)
+  - TypeScript/Rust 빌드 성공
 
 ## 커밋 히스토리
+- `8de8624` feat(desktop): Add calendar events to Progress tab heatmap
 - `2e70b4a` feat(desktop): Add calendar events to Today tab timeline
 - `14d927e` feat(desktop): Add server Calendar API integration with deep-link support
 - `d70fb1e` feat(server): Add Calendar API proxy endpoints
 - `0699a69` feat(server): Add Google Calendar OAuth integration
 
 ## 다음 단계
-1. **05_progress-integration** - Progress 탭에 캘린더 이벤트 반영
-   - 완료된 이벤트 집계
-   - 히트맵에 이벤트 포함
+1. **06_settings-management** - Settings에서 캘린더 연동 관리
+   - 연결/해제 UI
+   - 캘린더 선택 UI

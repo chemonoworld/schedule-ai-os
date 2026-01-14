@@ -49,6 +49,9 @@ interface HeatmapData {
   level: number;
   completionRate: number;
   taskCount: number;
+  // 캘린더 이벤트 관련 필드 (선택적)
+  eventCount?: number;
+  hasEvents?: boolean;
 }
 
 // Swipeable Subtask Component
@@ -1060,7 +1063,7 @@ function App() {
   const { tasks, selectedDate, isLoading, loadTasks, setSelectedDate, updateTaskStatus, updateTask, deleteTask, createTask, createSubTask, updateSubTaskStatus, updateSubTask, deleteSubTask } = useTaskStore();
   const { plans, loadPlans, createPlan, updatePlan, deletePlan: deletePlanFromStore } = usePlanStore();
   const { isActive, checkFrontmostApp, tick } = useFocusStore();
-  const { isConnected: isCalendarConnected, getEventsForDate, syncEvents } = useCalendarStore();
+  const { isConnected: isCalendarConnected, getEventsForDate, syncEvents, syncEventsForYear, getEventCountsByDate } = useCalendarStore();
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newPlanInput, setNewPlanInput] = useState('');
@@ -2245,7 +2248,24 @@ function App() {
           year,
           allProgress,
         });
-        const activeDays = heatmap.filter(d => d.taskCount > 0);
+
+        // 캘린더 이벤트 동기화 및 히트맵에 병합
+        if (isCalendarConnected) {
+          console.log('[Progress] Syncing calendar events for year:', year);
+          await syncEventsForYear(year);
+          const eventCounts = getEventCountsByDate();
+          console.log('[Progress] Event counts:', eventCounts.size, 'dates with events');
+
+          // 이벤트 수를 히트맵 데이터에 병합
+          for (const day of heatmap) {
+            if (day.taskCount === -1) continue; // placeholder 셀 건너뛰기
+            const eventCount = eventCounts.get(day.date) || 0;
+            day.eventCount = eventCount;
+            day.hasEvents = eventCount > 0;
+          }
+        }
+
+        const activeDays = heatmap.filter(d => d.taskCount > 0 || (d.eventCount && d.eventCount > 0));
         console.log('[Progress] Heatmap data received:', heatmap.length, 'first date:', heatmap[0]?.date, 'active days:', activeDays.length, activeDays.slice(0, 3));
         setHeatmapData(heatmap);
 
@@ -2280,7 +2300,8 @@ function App() {
     };
 
     loadProgressData(progressYear);
-  }, [activeTab, progressYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, progressYear, isCalendarConnected]);
 
   const today = formatDate(new Date());
   const isToday = selectedDate === today;
@@ -2924,14 +2945,16 @@ function App() {
                         ) : (
                           <div
                             key={day.date}
-                            className={`heatmap-cell level-${day.level}`}
-                            data-tooltip={`${day.date}: ${Math.round(day.completionRate * 100)}% (${day.taskCount})`}
+                            className={`heatmap-cell level-${day.level}${day.hasEvents ? ' has-events' : ''}`}
+                            data-tooltip={`${day.date}: ${Math.round(day.completionRate * 100)}% (${day.taskCount} tasks${day.eventCount ? `, ${day.eventCount} events` : ''})`}
                             onClick={() => {
                               setSelectedHeatmapDate(day.date);
                               setSelectedDate(day.date);
                               setActiveTab('today');
                             }}
-                          />
+                          >
+                            {day.hasEvents && <span className="event-dot" />}
+                          </div>
                         )
                       ))}
                     </div>
@@ -2953,7 +2976,7 @@ function App() {
             <div className="progress-stats">
               <div className="stat-card">
                 <span className="stat-value">
-                  {heatmapData.filter(d => d.taskCount > 0).length}
+                  {heatmapData.filter(d => d.taskCount > 0 || (d.eventCount && d.eventCount > 0)).length}
                 </span>
                 <span className="stat-label">{t('progress:stats.activeDays')}</span>
               </div>
@@ -2974,6 +2997,14 @@ function App() {
                 </span>
                 <span className="stat-label">{t('progress:stats.achievementRate')}</span>
               </div>
+              {isCalendarConnected && (
+                <div className="stat-card">
+                  <span className="stat-value">
+                    {heatmapData.reduce((sum, d) => sum + (d.eventCount || 0), 0)}
+                  </span>
+                  <span className="stat-label">{t('progress:stats.totalEvents', '이벤트')}</span>
+                </div>
+              )}
             </div>
           </div>
         )}

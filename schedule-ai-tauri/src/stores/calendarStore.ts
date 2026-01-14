@@ -45,7 +45,9 @@ interface CalendarState {
 
   // 이벤트 관리
   syncEvents: (startDate: string, endDate: string) => Promise<void>;
+  syncEventsForYear: (year: number) => Promise<void>;
   getEventsForDate: (date: string) => CalendarEvent[];
+  getEventCountsByDate: () => Map<string, number>;
 
   // 설정
   setSyncMode: (mode: SyncMode) => void;
@@ -233,6 +235,36 @@ export const useCalendarStore = create<CalendarState>()(
         }
       },
 
+      // 연간 이벤트 동기화 (Progress 탭용)
+      syncEventsForYear: async (year: number) => {
+        if (!get().isConnected) {
+          return;
+        }
+
+        // 연도의 시작일과 종료일
+        const startDate = `${year}-01-01`;
+        const endDate = `${year}-12-31`;
+
+        set({ isLoading: true, error: null });
+
+        try {
+          const response = await calendarApi.listEvents(startDate, endDate);
+          set({
+            events: response.events.map((event) => ({
+              ...event,
+              syncedAt: response.syncedAt,
+            })),
+            lastSyncAt: response.syncedAt,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Failed to sync events',
+          });
+        }
+      },
+
       // 특정 날짜의 이벤트 조회
       getEventsForDate: (date: string) => {
         const { events } = get();
@@ -240,6 +272,23 @@ export const useCalendarStore = create<CalendarState>()(
           const eventDate = event.startTime.split('T')[0];
           return eventDate === date;
         });
+      },
+
+      // 날짜별 이벤트 수 집계 (Progress 히트맵용)
+      getEventCountsByDate: () => {
+        const { events } = get();
+        const countMap = new Map<string, number>();
+
+        for (const event of events) {
+          // cancelled 이벤트는 제외
+          if (event.status === 'cancelled') continue;
+
+          const eventDate = event.startTime.split('T')[0];
+          const currentCount = countMap.get(eventDate) || 0;
+          countMap.set(eventDate, currentCount + 1);
+        }
+
+        return countMap;
       },
 
       // 동기화 모드 설정
