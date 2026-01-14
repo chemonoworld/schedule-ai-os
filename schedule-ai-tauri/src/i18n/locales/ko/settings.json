@@ -30,7 +30,13 @@
     "placeholder": "키를 누르세요...",
     "tabShortcuts": "탭 단축키",
     "tabShortcutsDesc": "탭 전환 키보드 단축키를 설정하세요.",
-    "tabShortcutsHint": "키로 탭 전환"
+    "tabShortcutsHint": "키로 탭 전환",
+    "aiInputTitle": "AI 입력 모드 단축키",
+    "aiInputDesc": "Today 탭에서 일반 입력과 AI 입력 모드를 전환하는 단축키입니다.",
+    "aiInputLabel": "모드 전환:",
+    "focusInputTitle": "입력창 포커스 단축키",
+    "focusInputDesc": "Today 탭에서 태스크 입력창에 포커스하는 단축키입니다.",
+    "focusInputLabel": "입력창 포커스:"
   },
   "planRules": {
     "title": "Plan 규칙",

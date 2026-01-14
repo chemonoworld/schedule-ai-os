@@ -1,6 +1,7 @@
 {
   "title": "Today",
-  "dateLabel": "Today",
+  "dateLabel": "오늘",
+  "gotoToday": "오늘로",
   "progress": {
     "completed": "{{completed}}/{{total}} 완료"
   },
@@ -10,7 +11,12 @@
   },
   "addTask": {
     "placeholder": "새 태스크 추가...",
-    "button": "추가"
+    "aiPlaceholder": "예: 내일 오후 3시 카페에서 미팅, 준비물 챙기기",
+    "button": "추가",
+    "aiButton": "생성",
+    "modeHint": "{{shortcut}}로 모드 전환",
+    "switchToAI": "AI 모드로 전환 ({{shortcut}})",
+    "switchToManual": "수동 모드로 전환 ({{shortcut}})"
   },
   "export": {
     "markdown": "마크다운으로 내보내기",

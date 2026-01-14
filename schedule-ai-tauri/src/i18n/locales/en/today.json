@@ -1,6 +1,7 @@
 {
   "title": "Today",
   "dateLabel": "Today",
+  "gotoToday": "Today",
   "progress": {
     "completed": "{{completed}}/{{total}} Completed"
   },
@@ -10,7 +11,12 @@
   },
   "addTask": {
     "placeholder": "Add a new task...",
-    "button": "Add"
+    "aiPlaceholder": "e.g., Tomorrow 3pm meeting at cafe, bring documents",
+    "button": "Add",
+    "aiButton": "Create",
+    "modeHint": "Press {{shortcut}} to switch mode",
+    "switchToAI": "Switch to AI mode ({{shortcut}})",
+    "switchToManual": "Switch to manual mode ({{shortcut}})"
   },
   "export": {
     "markdown": "Export as Markdown",

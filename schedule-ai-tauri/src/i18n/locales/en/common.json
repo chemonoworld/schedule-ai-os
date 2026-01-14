@@ -15,7 +15,8 @@
     "edit": "Edit",
     "close": "Close",
     "collapse": "Collapse",
-    "expand": "Expand"
+    "expand": "Expand",
+    "reset": "Reset"
   },
   "status": {
     "loading": "Loading...",

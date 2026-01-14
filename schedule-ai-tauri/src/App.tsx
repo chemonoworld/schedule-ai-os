@@ -960,6 +960,20 @@ function App() {
   const [recordingTabIndex, setRecordingTabIndex] = useState<number | null>(null);
   const [recordedTabKey, setRecordedTabKey] = useState<string>('');
 
+  // AI input mode state
+  const [inputMode, setInputMode] = useState<'manual' | 'ai'>('manual');
+  const [aiInputShortcut, setAiInputShortcut] = useState('shift+tab');
+  const [isParsingTask, setIsParsingTask] = useState(false);
+  const [recordingAiShortcut, setRecordingAiShortcut] = useState(false);
+  const [recordedAiShortcutKey, setRecordedAiShortcutKey] = useState('');
+
+  // Focus input shortcut state
+  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const [focusInputShortcut, setFocusInputShortcut] = useState(isMac ? 'cmd+l' : 'ctrl+l');
+  const [recordingFocusShortcut, setRecordingFocusShortcut] = useState(false);
+  const [recordedFocusShortcutKey, setRecordedFocusShortcutKey] = useState('');
+  const taskInputRef = useRef<HTMLInputElement>(null);
+
   // API Key state
   const [apiKey, setApiKey] = useState('');
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -1029,6 +1043,18 @@ function App() {
     invoke<string[]>('get_tab_shortcuts').then((shortcuts) => {
       if (shortcuts && shortcuts.length === 5) {
         setTabShortcuts(shortcuts);
+      }
+    }).catch(console.error);
+    // Load AI input shortcut
+    invoke<string>('get_ai_input_shortcut').then((shortcut) => {
+      if (shortcut) {
+        setAiInputShortcut(shortcut);
+      }
+    }).catch(console.error);
+    // Load focus input shortcut
+    invoke<string>('get_focus_input_shortcut').then((shortcut) => {
+      if (shortcut) {
+        setFocusInputShortcut(shortcut);
       }
     }).catch(console.error);
 
@@ -1179,6 +1205,173 @@ function App() {
     };
   }, [recordingTabIndex, recordedTabKey, tabShortcuts]);
 
+  // AI 입력 모드 전환 단축키
+  useEffect(() => {
+    const checkAiShortcut = (e: KeyboardEvent, shortcut: string) => {
+      const parts = shortcut.toLowerCase().split('+');
+      const key = parts[parts.length - 1];
+      const needShift = parts.includes('shift');
+      const needCtrl = parts.includes('ctrl');
+      const needAlt = parts.includes('alt');
+      const needCmd = parts.includes('cmd');
+
+      return (
+        e.key.toLowerCase() === key &&
+        e.shiftKey === needShift &&
+        e.ctrlKey === needCtrl &&
+        e.altKey === needAlt &&
+        e.metaKey === needCmd
+      );
+    };
+
+    const handleAiShortcut = (e: KeyboardEvent) => {
+      // 레코딩 중에는 무시
+      if (isRecordingShortcut || recordingTabIndex !== null || recordingAiShortcut) return;
+
+      // 입력 필드에서만 동작 (Today 탭의 태스크 입력)
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'INPUT' && target.tagName !== 'TEXTAREA') return;
+
+      if (checkAiShortcut(e, aiInputShortcut)) {
+        e.preventDefault();
+        setInputMode(prev => prev === 'manual' ? 'ai' : 'manual');
+      }
+    };
+
+    window.addEventListener('keydown', handleAiShortcut);
+    return () => window.removeEventListener('keydown', handleAiShortcut);
+  }, [aiInputShortcut, isRecordingShortcut, recordingTabIndex, recordingAiShortcut]);
+
+  // AI 단축키 레코딩
+  useEffect(() => {
+    if (!recordingAiShortcut) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      const keys: string[] = [];
+
+      if (e.shiftKey) keys.push('shift');
+      if (e.ctrlKey) keys.push('ctrl');
+      if (e.altKey) keys.push('alt');
+      if (e.metaKey) keys.push('cmd');
+
+      // modifier 키가 아닌 실제 키 추가
+      if (!['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) {
+        keys.push(e.key.toLowerCase());
+      }
+
+      if (keys.length > 0) {
+        setRecordedAiShortcutKey(keys.join('+'));
+      }
+    };
+
+    const handleKeyUp = async () => {
+      if (recordedAiShortcutKey && recordedAiShortcutKey.includes('+')) {
+        setAiInputShortcut(recordedAiShortcutKey);
+        try {
+          await invoke('set_ai_input_shortcut', { shortcut: recordedAiShortcutKey });
+        } catch (error) {
+          console.error('Failed to save AI input shortcut:', error);
+        }
+        setRecordingAiShortcut(false);
+        setRecordedAiShortcutKey('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [recordingAiShortcut, recordedAiShortcutKey]);
+
+  // 입력창 포커스 단축키
+  useEffect(() => {
+    const checkFocusShortcut = (e: KeyboardEvent, shortcut: string) => {
+      const parts = shortcut.toLowerCase().split('+');
+      const key = parts[parts.length - 1];
+      const needShift = parts.includes('shift');
+      const needCtrl = parts.includes('ctrl');
+      const needAlt = parts.includes('alt');
+      const needCmd = parts.includes('cmd') || parts.includes('meta');
+
+      const pressedKey = e.key.toLowerCase();
+      const hasShift = e.shiftKey;
+      const hasCtrl = e.ctrlKey;
+      const hasAlt = e.altKey;
+      const hasCmd = e.metaKey;
+
+      return (
+        pressedKey === key &&
+        hasShift === needShift &&
+        hasCtrl === needCtrl &&
+        hasAlt === needAlt &&
+        hasCmd === needCmd
+      );
+    };
+
+    const handleFocusShortcut = (e: KeyboardEvent) => {
+      // 단축키 레코딩 중이면 무시
+      if (isRecordingShortcut || recordingTabIndex !== null || recordingAiShortcut || recordingFocusShortcut) return;
+      // 다른 input에 포커스 되어 있으면 무시
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+
+      if (activeTab === 'today' && checkFocusShortcut(e, focusInputShortcut)) {
+        e.preventDefault();
+        taskInputRef.current?.focus();
+      }
+    };
+
+    window.addEventListener('keydown', handleFocusShortcut);
+    return () => window.removeEventListener('keydown', handleFocusShortcut);
+  }, [focusInputShortcut, isRecordingShortcut, recordingTabIndex, recordingAiShortcut, recordingFocusShortcut, activeTab]);
+
+  // 포커스 단축키 레코딩
+  useEffect(() => {
+    if (!recordingFocusShortcut) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const parts: string[] = [];
+      if (e.metaKey) parts.push('cmd');
+      if (e.ctrlKey) parts.push('ctrl');
+      if (e.altKey) parts.push('alt');
+      if (e.shiftKey) parts.push('shift');
+
+      const key = e.key.toLowerCase();
+      if (!['control', 'shift', 'alt', 'meta'].includes(key)) {
+        parts.push(key);
+      }
+
+      setRecordedFocusShortcutKey(parts.join('+'));
+    };
+
+    const handleKeyUp = async () => {
+      if (recordedFocusShortcutKey && recordedFocusShortcutKey.includes('+')) {
+        setFocusInputShortcut(recordedFocusShortcutKey);
+        try {
+          await invoke('set_focus_input_shortcut', { shortcut: recordedFocusShortcutKey });
+        } catch (error) {
+          console.error('Failed to save focus input shortcut:', error);
+        }
+        setRecordingFocusShortcut(false);
+        setRecordedFocusShortcutKey('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [recordingFocusShortcut, recordedFocusShortcutKey]);
+
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newTaskTitle.trim()) return;
@@ -1193,6 +1386,70 @@ function App() {
       setNewTaskTitle('');
     } catch (error) {
       console.error('Failed to create task:', error);
+    }
+  };
+
+  // AI 태스크 파싱 및 생성
+  interface ParseTaskResponse {
+    title: string;
+    scheduledDate?: string;
+    scheduledTime?: string;
+    endTime?: string;
+    location?: string;
+    subtasks?: string[];
+    priority?: number;
+    estimatedDuration?: number;
+  }
+
+  const handleAICreateTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newTaskTitle.trim() || isParsingTask) return;
+
+    setIsParsingTask(true);
+    try {
+      const today = formatDate(new Date());
+      const parsed = await invoke<ParseTaskResponse>('parse_task_with_ai', {
+        input: newTaskTitle,
+        currentDate: today,
+      });
+
+      console.log('AI parsed task:', parsed);
+
+      // 메인 태스크 생성
+      const task = await createTask({
+        title: parsed.title,
+        scheduledDate: parsed.scheduledDate || selectedDate,
+        scheduledTime: parsed.scheduledTime,
+        location: parsed.location,
+        priority: parsed.priority,
+        estimatedDuration: parsed.estimatedDuration,
+      });
+
+      // 서브태스크가 있으면 추가
+      if (parsed.subtasks && parsed.subtasks.length > 0) {
+        for (const subtaskTitle of parsed.subtasks) {
+          await createSubTask({ taskId: task.id, title: subtaskTitle });
+        }
+        // 태스크 다시 로드하여 서브태스크 반영
+        await loadTasks(parsed.scheduledDate || selectedDate);
+      }
+
+      setNewTaskTitle('');
+      setInputMode('manual'); // 성공 후 수동 모드로 전환
+    } catch (error) {
+      console.error('Failed to parse/create task with AI:', error);
+      // AI 파싱 실패 시 일반 태스크로 폴백
+      try {
+        await createTask({
+          title: newTaskTitle,
+          scheduledDate: selectedDate,
+        });
+        setNewTaskTitle('');
+      } catch (fallbackError) {
+        console.error('Fallback task creation also failed:', fallbackError);
+      }
+    } finally {
+      setIsParsingTask(false);
     }
   };
 
@@ -1937,6 +2194,15 @@ function App() {
               >
                 &rarr;
               </button>
+              {!isToday && (
+                <button
+                  className="goto-today-btn"
+                  onClick={() => setSelectedDate(today)}
+                  title={t('today:gotoToday')}
+                >
+                  {t('today:gotoToday')}
+                </button>
+              )}
             </div>
 
             {/* Progress */}
@@ -2014,16 +2280,32 @@ function App() {
             </div>
 
             {/* Add Task Form */}
-            <form className="add-task-form" onSubmit={handleCreateTask}>
+            <form className="add-task-form" onSubmit={inputMode === 'manual' ? handleCreateTask : handleAICreateTask}>
+              <button
+                type="button"
+                className={`input-mode-indicator ${inputMode}`}
+                data-tooltip={inputMode === 'ai'
+                  ? t('today:addTask.switchToManual', { shortcut: aiInputShortcut })
+                  : t('today:addTask.switchToAI', { shortcut: aiInputShortcut })}
+                onClick={() => setInputMode(inputMode === 'manual' ? 'ai' : 'manual')}
+              >
+                <span className="mode-icon">{inputMode === 'ai' ? '✨' : '✏️'}</span>
+              </button>
               <input
+                ref={taskInputRef}
                 type="text"
-                placeholder={t('today:addTask.placeholder')}
+                placeholder={inputMode === 'ai' ? t('today:addTask.aiPlaceholder') : t('today:addTask.placeholder')}
                 value={newTaskTitle}
                 onChange={(e) => setNewTaskTitle(e.target.value)}
-                className="add-task-input"
+                className={`add-task-input ${inputMode === 'ai' ? 'ai-mode' : ''}`}
+                disabled={isParsingTask}
               />
-              <button type="submit" className="add-task-btn" disabled={!newTaskTitle.trim()}>
-                {t('today:addTask.button')}
+              <button
+                type="submit"
+                className={`add-task-btn ${inputMode === 'ai' ? 'ai-mode' : ''}`}
+                disabled={!newTaskTitle.trim() || isParsingTask}
+              >
+                {isParsingTask ? t('common:status.analyzing') : (inputMode === 'ai' ? t('today:addTask.aiButton') : t('today:addTask.button'))}
               </button>
             </form>
           </div>
@@ -2611,6 +2893,89 @@ function App() {
                 <p className="tab-shortcuts-hint">
                   {navigator.platform.toUpperCase().indexOf('MAC') >= 0 ? 'Cmd' : 'Ctrl'} + {t('settings:shortcut.tabShortcutsHint')}
                 </p>
+              </div>
+
+              {/* AI Input Mode Shortcut */}
+              <div className="ai-shortcut-section">
+                <h4>{t('settings:shortcut.aiInputTitle')}</h4>
+                <p className="settings-description-small">{t('settings:shortcut.aiInputDesc')}</p>
+                <div className="ai-shortcut-setting">
+                  <span className="ai-shortcut-label">{t('settings:shortcut.aiInputLabel')}</span>
+                  <button
+                    className={`ai-shortcut-input ${recordingAiShortcut ? 'recording' : ''}`}
+                    onClick={() => {
+                      setRecordingAiShortcut(true);
+                      setRecordedAiShortcutKey('');
+                    }}
+                  >
+                    {recordingAiShortcut
+                      ? (recordedAiShortcutKey || t('settings:shortcut.placeholder'))
+                      : aiInputShortcut
+                    }
+                  </button>
+                  {recordingAiShortcut && (
+                    <button
+                      className="shortcut-cancel"
+                      onClick={() => {
+                        setRecordingAiShortcut(false);
+                        setRecordedAiShortcutKey('');
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <button
+                    className="shortcut-reset"
+                    onClick={async () => {
+                      setAiInputShortcut('shift+tab');
+                      await invoke('set_ai_input_shortcut', { shortcut: 'shift+tab' });
+                    }}
+                  >
+                    {t('common:buttons.reset')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Focus Input Shortcut */}
+              <div className="ai-shortcut-section">
+                <h4>{t('settings:shortcut.focusInputTitle')}</h4>
+                <p className="settings-description-small">{t('settings:shortcut.focusInputDesc')}</p>
+                <div className="ai-shortcut-setting">
+                  <span className="ai-shortcut-label">{t('settings:shortcut.focusInputLabel')}</span>
+                  <button
+                    className={`ai-shortcut-input ${recordingFocusShortcut ? 'recording' : ''}`}
+                    onClick={() => {
+                      setRecordingFocusShortcut(true);
+                      setRecordedFocusShortcutKey('');
+                    }}
+                  >
+                    {recordingFocusShortcut
+                      ? (recordedFocusShortcutKey || t('settings:shortcut.placeholder'))
+                      : focusInputShortcut
+                    }
+                  </button>
+                  {recordingFocusShortcut && (
+                    <button
+                      className="shortcut-cancel"
+                      onClick={() => {
+                        setRecordingFocusShortcut(false);
+                        setRecordedFocusShortcutKey('');
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <button
+                    className="shortcut-reset"
+                    onClick={async () => {
+                      const defaultShortcut = isMac ? 'cmd+l' : 'ctrl+l';
+                      setFocusInputShortcut(defaultShortcut);
+                      await invoke('set_focus_input_shortcut', { shortcut: defaultShortcut });
+                    }}
+                  >
+                    {t('common:buttons.reset')}
+                  </button>
+                </div>
               </div>
             </div>
 

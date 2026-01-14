@@ -306,6 +306,56 @@ fn set_tab_shortcuts(app: AppHandle, shortcuts: Vec<String>) -> Result<(), Strin
     Ok(())
 }
 
+// AI Input mode shortcut commands
+#[tauri::command]
+fn get_ai_input_shortcut(app: AppHandle) -> String {
+    if let Ok(store) = app.store("settings.json") {
+        if let Some(shortcut) = store.get("ai_input_shortcut") {
+            if let Some(s) = shortcut.as_str() {
+                return s.to_string();
+            }
+        }
+    }
+    "shift+tab".to_string() // 기본값
+}
+
+#[tauri::command]
+fn set_ai_input_shortcut(app: AppHandle, shortcut: String) -> Result<(), String> {
+    let store = app.store("settings.json").map_err(|e| e.to_string())?;
+    store.set("ai_input_shortcut", serde_json::json!(shortcut));
+    store.save().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+// Focus input shortcut commands
+#[tauri::command]
+fn get_focus_input_shortcut(app: AppHandle) -> String {
+    if let Ok(store) = app.store("settings.json") {
+        if let Some(shortcut) = store.get("focus_input_shortcut") {
+            if let Some(s) = shortcut.as_str() {
+                return s.to_string();
+            }
+        }
+    }
+    // macOS: cmd+l, others: ctrl+l
+    #[cfg(target_os = "macos")]
+    {
+        "cmd+l".to_string()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        "ctrl+l".to_string()
+    }
+}
+
+#[tauri::command]
+fn set_focus_input_shortcut(app: AppHandle, shortcut: String) -> Result<(), String> {
+    let store = app.store("settings.json").map_err(|e| e.to_string())?;
+    store.set("focus_input_shortcut", serde_json::json!(shortcut));
+    store.save().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 // Language settings commands
 #[tauri::command]
 fn get_system_locale() -> String {
@@ -421,6 +471,72 @@ JSON 형식으로만 응답하세요:
     };
 
     let parsed: commands::llm::SplitTaskResponse = serde_json::from_str(json_str)
+        .map_err(|e| format!("Failed to parse LLM response: {}. Response: {}", e, json_str))?;
+
+    Ok(parsed)
+}
+
+#[tauri::command]
+async fn parse_task_with_ai(
+    state: State<'_, ApiKeyState>,
+    input: String,
+    current_date: String,
+) -> Result<commands::llm::ParseTaskResponse, String> {
+    let api_key = state.0.lock().unwrap().clone()
+        .ok_or("API key not set")?;
+
+    let provider = ClaudeProvider::new(api_key);
+
+    let system_prompt = format!(r#"당신은 ADHD 환자를 돕는 일정 관리 AI입니다.
+사용자의 자연어 입력을 분석하여 구조화된 태스크 정보로 변환해주세요.
+
+오늘 날짜: {}
+
+입력에서 다음 정보를 추출하세요:
+- title: 태스크 제목 (필수)
+- scheduled_date: 날짜 "YYYY-MM-DD" (없으면 오늘)
+- scheduled_time: 시작 시간 "HH:MM" (있으면)
+- end_time: 종료 시간 "HH:MM" (있으면)
+- location: 장소 (있으면)
+- subtasks: 서브태스크 배열 (있으면)
+- priority: 우선순위 0-3 (기본값 1)
+- estimated_duration: 예상 소요시간(분) (시작/종료 시간으로 계산하거나 추정)
+
+날짜 키워드:
+- "오늘" = 오늘 날짜
+- "내일" = 오늘 + 1일
+- "모레" = 오늘 + 2일
+- "다음주" = 오늘 + 7일
+
+JSON 형식으로만 응답하세요 (마크다운 코드블록 없이):
+{{"title": "태스크 제목", "scheduled_date": "2026-01-15", "scheduled_time": "14:00", "location": "카페", "subtasks": ["준비물 챙기기"], "priority": 1, "estimated_duration": 60}}"#, current_date);
+
+    let request = LLMRequest {
+        messages: vec![
+            LLMMessage {
+                role: "user".to_string(),
+                content: format!("{}\n\n입력: {}", system_prompt, input),
+            },
+        ],
+        max_tokens: Some(1024),
+        temperature: Some(0.3),
+    };
+
+    let response = provider.complete(request).await.map_err(|e| e.to_string())?;
+
+    // Parse the JSON response - handle markdown code blocks
+    let content = response.content.trim();
+    let json_str = if content.starts_with("```") {
+        content
+            .trim_start_matches("```json")
+            .trim_start_matches("```")
+            .trim_end_matches("```")
+            .trim()
+    } else {
+        content
+    };
+
+    let parsed: commands::llm::ParseTaskResponse = serde_json::from_str(json_str)
         .map_err(|e| format!("Failed to parse LLM response: {}. Response: {}", e, json_str))?;
 
     Ok(parsed)
@@ -1011,11 +1127,18 @@ pub fn run() {
             // Tab shortcuts
             get_tab_shortcuts,
             set_tab_shortcuts,
+            // AI input mode shortcut
+            get_ai_input_shortcut,
+            set_ai_input_shortcut,
+            // Focus input shortcut
+            get_focus_input_shortcut,
+            set_focus_input_shortcut,
             // Language settings
             get_system_locale,
             get_language,
             set_language,
             split_task_with_ai,
+            parse_task_with_ai,
             parse_plan_with_ai,
             generate_daily_tasks_with_ai,
             // Export/Import

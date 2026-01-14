@@ -30,7 +30,13 @@
     "placeholder": "Press a key...",
     "tabShortcuts": "Tab Shortcuts",
     "tabShortcutsDesc": "Customize keyboard shortcuts for tab navigation.",
-    "tabShortcutsHint": "key to switch tabs"
+    "tabShortcutsHint": "key to switch tabs",
+    "aiInputTitle": "AI Input Mode Shortcut",
+    "aiInputDesc": "Shortcut to toggle between manual and AI input mode in Today tab.",
+    "aiInputLabel": "Toggle Mode:",
+    "focusInputTitle": "Focus Input Shortcut",
+    "focusInputDesc": "Shortcut to focus the task input field in Today tab.",
+    "focusInputLabel": "Focus Input:"
   },
   "planRules": {
     "title": "Plan Rules",
