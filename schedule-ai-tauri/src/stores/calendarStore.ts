@@ -1,40 +1,20 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { invoke } from '@tauri-apps/api/core';
 import { openUrl } from '@tauri-apps/plugin-opener';
+import { calendarApi, getAccessToken, setAccessToken } from '../services/calendarApi';
+import type {
+  GoogleCalendar as ApiGoogleCalendar,
+  CalendarEvent as ApiCalendarEvent,
+} from '../services/calendarApi';
 
-// 타입 정의
-export interface GoogleCalendar {
-  id: string;
-  summary: string;
-  description?: string;
-  backgroundColor?: string;
-  isSelected: boolean;
-  isPrimary: boolean;
-}
+// 타입 정의 (calendarApi 타입을 재사용하되 로컬 확장)
+export interface GoogleCalendar extends ApiGoogleCalendar {}
 
-export interface CalendarEvent {
-  id: string;
-  calendarId: string;
-  title: string;
-  description?: string;
-  location?: string;
-  startTime: string;
-  endTime: string;
-  isAllDay: boolean;
-  status: 'confirmed' | 'tentative' | 'cancelled';
-  colorId?: string;
-  htmlLink?: string;
-  syncedAt: string;
+export interface CalendarEvent extends ApiCalendarEvent {
+  syncedAt?: string;
 }
 
 export type SyncMode = 'auto' | 'manual';
-
-interface ConnectionStatus {
-  isConnected: boolean;
-  email: string | null;
-  expiresAt: number | null;
-}
 
 interface CalendarState {
   // 연결 상태
@@ -58,11 +38,10 @@ interface CalendarState {
   checkConnection: () => Promise<void>;
   connect: () => Promise<void>;
   disconnect: () => Promise<void>;
-  getAccessToken: () => Promise<string | null>;
 
   // 캘린더 관리
   syncCalendars: () => Promise<void>;
-  toggleCalendarSelection: (calendarId: string) => void;
+  toggleCalendarSelection: (calendarId: string) => Promise<void>;
 
   // 이벤트 관리
   syncEvents: (startDate: string, endDate: string) => Promise<void>;
@@ -71,17 +50,11 @@ interface CalendarState {
   // 설정
   setSyncMode: (mode: SyncMode) => void;
   clearError: () => void;
+
+  // OAuth 콜백 처리
+  handleOAuthSuccess: () => Promise<void>;
+  handleOAuthError: (message: string) => void;
 }
-
-// OAuth 콜백을 처리하기 위한 로컬 서버 포트
-const OAUTH_REDIRECT_PORT = 9876;
-
-// 환경변수에서 Client ID/Secret 가져오기
-const getClientCredentials = () => {
-  const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-  const clientSecret = import.meta.env.VITE_GOOGLE_CLIENT_SECRET || '';
-  return { clientId, clientSecret };
-};
 
 export const useCalendarStore = create<CalendarState>()(
   persist(
@@ -97,10 +70,16 @@ export const useCalendarStore = create<CalendarState>()(
       lastSyncAt: null,
       syncMode: 'auto',
 
-      // 연결 상태 확인
+      // 연결 상태 확인 (서버 API)
       checkConnection: async () => {
+        // JWT 토큰이 없으면 연결 안 됨
+        if (!getAccessToken()) {
+          set({ isConnected: false, userEmail: null });
+          return;
+        }
+
         try {
-          const status = await invoke<ConnectionStatus>('get_google_connection_status');
+          const status = await calendarApi.getConnectionStatus();
           set({
             isConnected: status.isConnected,
             userEmail: status.email,
@@ -111,38 +90,23 @@ export const useCalendarStore = create<CalendarState>()(
         }
       },
 
-      // Google 계정 연결
+      // Google 계정 연결 (서버 OAuth)
       connect: async () => {
-        const { clientId, clientSecret } = getClientCredentials();
-
-        if (!clientId || !clientSecret) {
-          set({ error: 'Google OAuth credentials not configured' });
+        // JWT 토큰 확인
+        if (!getAccessToken()) {
+          set({ error: 'Please login first to connect Google Calendar' });
           return;
         }
 
         set({ isLoading: true, error: null });
 
         try {
-          // 1. 인증 URL 생성
-          const authUrl = await invoke<string>('get_google_auth_url', {
-            clientId,
-            redirectPort: OAUTH_REDIRECT_PORT,
-          });
+          // 서버 OAuth URL로 브라우저 열기
+          const oauthUrl = calendarApi.getOAuthUrl();
+          await openUrl(oauthUrl);
 
-          // 2. 로컬 서버 시작 및 브라우저 열기
-          // 브라우저에서 인증 후 콜백 URL로 리다이렉트
-          await openUrl(authUrl);
-
-          // 3. 사용자에게 콜백 URL의 code를 입력받아야 함
-          // 이 부분은 실제로는 로컬 서버로 콜백을 받아 처리해야 함
-          // 일단 수동으로 code를 입력받는 방식으로 구현
-          // (실제 구현에서는 tauri-plugin-oauth 또는 직접 로컬 서버 구현 필요)
-
-          set({ isLoading: false });
-
-          // Note: 실제 OAuth 콜백 처리는 별도의 로직 필요
-          // 현재는 handleOAuthCallback 함수를 통해 수동으로 처리
-
+          // Deep Link 콜백 대기 (handleOAuthSuccess/handleOAuthError에서 처리)
+          // isLoading은 OAuth 완료 후 해제됨
         } catch (error) {
           set({
             isLoading: false,
@@ -151,12 +115,12 @@ export const useCalendarStore = create<CalendarState>()(
         }
       },
 
-      // Google 계정 연결 해제
+      // 연결 해제 (서버 API)
       disconnect: async () => {
         set({ isLoading: true, error: null });
 
         try {
-          await invoke('disconnect_google');
+          await calendarApi.disconnect();
           set({
             isConnected: false,
             userEmail: null,
@@ -174,45 +138,99 @@ export const useCalendarStore = create<CalendarState>()(
         }
       },
 
-      // Access token 가져오기 (필요시 갱신)
-      getAccessToken: async () => {
-        const { clientId, clientSecret } = getClientCredentials();
-
-        if (!clientId || !clientSecret) {
-          return null;
+      // 캘린더 목록 동기화 (서버 API)
+      syncCalendars: async () => {
+        if (!get().isConnected) {
+          return;
         }
+
+        set({ isLoading: true, error: null });
 
         try {
-          const token = await invoke<string | null>('get_google_access_token', {
-            clientId,
-            clientSecret,
+          const response = await calendarApi.listCalendars();
+          const { selectedCalendarIds } = get();
+
+          // 서버에서 받은 isSelected 상태를 사용하되, 로컬 선택도 병합
+          const calendars = response.calendars.map((cal) => ({
+            ...cal,
+            isSelected: cal.isSelected || selectedCalendarIds.includes(cal.id),
+          }));
+
+          // 선택된 캘린더 ID 업데이트
+          const newSelectedIds = calendars
+            .filter((cal) => cal.isSelected)
+            .map((cal) => cal.id);
+
+          set({
+            calendars,
+            selectedCalendarIds: newSelectedIds,
+            isLoading: false,
           });
-          return token;
         } catch (error) {
-          console.error('Failed to get access token:', error);
-          return null;
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Failed to sync calendars',
+          });
         }
       },
 
-      // 캘린더 목록 동기화 (추후 Calendar API 연동 시 구현)
-      syncCalendars: async () => {
-        // TODO: Calendar API 연동 시 구현
-        console.log('syncCalendars - to be implemented with Calendar API');
-      },
+      // 캘린더 선택 토글 (서버에 저장)
+      toggleCalendarSelection: async (calendarId: string) => {
+        const { selectedCalendarIds, calendars } = get();
 
-      // 캘린더 선택 토글
-      toggleCalendarSelection: (calendarId: string) => {
-        const { selectedCalendarIds } = get();
         const newSelection = selectedCalendarIds.includes(calendarId)
           ? selectedCalendarIds.filter((id) => id !== calendarId)
           : [...selectedCalendarIds, calendarId];
-        set({ selectedCalendarIds: newSelection });
+
+        // UI 즉시 업데이트 (optimistic update)
+        set({
+          selectedCalendarIds: newSelection,
+          calendars: calendars.map((cal) => ({
+            ...cal,
+            isSelected: newSelection.includes(cal.id),
+          })),
+        });
+
+        // 서버에 저장 (비동기)
+        try {
+          await calendarApi.selectCalendars(newSelection);
+        } catch (error) {
+          console.error('Failed to save calendar selection:', error);
+          // 실패 시 롤백
+          set({
+            selectedCalendarIds,
+            calendars: calendars.map((cal) => ({
+              ...cal,
+              isSelected: selectedCalendarIds.includes(cal.id),
+            })),
+          });
+        }
       },
 
-      // 이벤트 동기화 (추후 Calendar API 연동 시 구현)
-      syncEvents: async (_startDate: string, _endDate: string) => {
-        // TODO: Calendar API 연동 시 구현
-        console.log('syncEvents - to be implemented with Calendar API');
+      // 이벤트 동기화 (서버 API)
+      syncEvents: async (startDate: string, endDate: string) => {
+        if (!get().isConnected) {
+          return;
+        }
+
+        set({ isLoading: true, error: null });
+
+        try {
+          const response = await calendarApi.listEvents(startDate, endDate);
+          set({
+            events: response.events.map((event) => ({
+              ...event,
+              syncedAt: response.syncedAt,
+            })),
+            lastSyncAt: response.syncedAt,
+            isLoading: false,
+          });
+        } catch (error) {
+          set({
+            isLoading: false,
+            error: error instanceof Error ? error.message : 'Failed to sync events',
+          });
+        }
       },
 
       // 특정 날짜의 이벤트 조회
@@ -233,6 +251,26 @@ export const useCalendarStore = create<CalendarState>()(
       clearError: () => {
         set({ error: null });
       },
+
+      // OAuth 성공 콜백 (Deep Link에서 호출)
+      handleOAuthSuccess: async () => {
+        console.log('Calendar OAuth successful');
+        set({ isLoading: false, error: null });
+
+        // 연결 상태 확인 및 캘린더 동기화
+        const { checkConnection, syncCalendars } = get();
+        await checkConnection();
+        await syncCalendars();
+      },
+
+      // OAuth 에러 콜백 (Deep Link에서 호출)
+      handleOAuthError: (message: string) => {
+        console.error('Calendar OAuth failed:', message);
+        set({
+          isLoading: false,
+          error: message,
+        });
+      },
     }),
     {
       name: 'calendar-settings',
@@ -244,46 +282,5 @@ export const useCalendarStore = create<CalendarState>()(
   )
 );
 
-// OAuth 콜백 처리 함수 (외부에서 호출)
-export async function handleOAuthCallback(code: string): Promise<boolean> {
-  const { clientId, clientSecret } = getClientCredentials();
-
-  if (!clientId || !clientSecret) {
-    console.error('Google OAuth credentials not configured');
-    return false;
-  }
-
-  try {
-    const result = await invoke<{ success: boolean; email: string | null; error: string | null }>(
-      'exchange_google_code',
-      {
-        code,
-        clientId,
-        clientSecret,
-        redirectPort: OAUTH_REDIRECT_PORT,
-      }
-    );
-
-    if (result.success && result.email) {
-      useCalendarStore.setState({
-        isConnected: true,
-        userEmail: result.email,
-        isLoading: false,
-        error: null,
-      });
-      return true;
-    } else {
-      useCalendarStore.setState({
-        isLoading: false,
-        error: result.error || 'Authentication failed',
-      });
-      return false;
-    }
-  } catch (error) {
-    useCalendarStore.setState({
-      isLoading: false,
-      error: error instanceof Error ? error.message : 'Failed to exchange code',
-    });
-    return false;
-  }
-}
+// JWT 토큰 설정 유틸리티 (외부에서 호출)
+export { setAccessToken, getAccessToken };
