@@ -61,6 +61,19 @@ pub struct GeneratedSubTask {
     pub estimated_minutes: i32,
 }
 
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ParseTaskResponse {
+    pub title: String,
+    pub scheduled_date: Option<String>,
+    pub scheduled_time: Option<String>,
+    pub end_time: Option<String>,
+    pub location: Option<String>,
+    pub subtasks: Option<Vec<String>>,
+    pub priority: Option<i32>,
+    pub estimated_duration: Option<i32>,
+}
+
 #[tauri::command]
 pub async fn process_with_llm(prompt: String, _context: LLMContext) -> Result<LLMResponse> {
     // TODO: Implement actual LLM call

@@ -15,7 +15,8 @@
     "edit": "수정",
     "close": "닫기",
     "collapse": "접기",
-    "expand": "펼치기"
+    "expand": "펼치기",
+    "reset": "초기화"
   },
   "status": {
     "loading": "로딩 중...",

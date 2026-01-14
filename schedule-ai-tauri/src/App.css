@@ -155,6 +155,24 @@ body {
   font-weight: 600;
 }
 
+.goto-today-btn {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--color-primary);
+  background: transparent;
+  color: var(--color-primary);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  font-size: 0.75rem;
+  font-weight: 500;
+  transition: all 0.15s ease;
+  margin-left: 0.5rem;
+}
+
+.goto-today-btn:hover {
+  background: var(--color-primary);
+  color: white;
+}
+
 /* Progress */
 .progress-section {
   background: var(--color-card);
@@ -738,6 +756,7 @@ body {
 /* Add Task Form */
 .add-task-form {
   display: flex;
+  align-items: center;
   gap: 0.5rem;
   position: sticky;
   bottom: 1rem;
@@ -782,6 +801,112 @@ body {
 .add-task-btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+/* AI Input Mode Indicator */
+.input-mode-indicator {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: none;
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.input-mode-indicator:hover {
+  transform: scale(1.03);
+}
+
+.input-mode-indicator:active {
+  transform: scale(0.97);
+}
+
+.input-mode-indicator .mode-icon {
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+/* Custom Tooltip */
+.input-mode-indicator::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5rem 0.75rem;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  white-space: nowrap;
+  border-radius: 0.375rem;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease, visibility 0.1s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.input-mode-indicator::before {
+  content: '';
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-top-color: rgba(0, 0, 0, 0.85);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease, visibility 0.1s ease;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.input-mode-indicator:hover::after,
+.input-mode-indicator:hover::before {
+  opacity: 1;
+  visibility: visible;
+}
+
+.input-mode-indicator.manual {
+  background: var(--color-bg);
+  color: var(--color-text-secondary);
+}
+
+.input-mode-indicator.manual:hover {
+  background: var(--color-border);
+}
+
+.input-mode-indicator.ai {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+  color: white;
+}
+
+.input-mode-indicator.ai:hover {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
+}
+
+.add-task-input.ai-mode {
+  border-color: #8b5cf6;
+}
+
+.add-task-input.ai-mode:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.2);
+}
+
+.add-task-btn.ai-mode {
+  background: linear-gradient(135deg, #6366f1, #8b5cf6);
+}
+
+.add-task-btn.ai-mode:hover:not(:disabled) {
+  background: linear-gradient(135deg, #4f46e5, #7c3aed);
 }
 
 /* Empty State */
@@ -1179,6 +1304,70 @@ body {
   color: var(--color-text-secondary);
   margin-top: 0.75rem;
   font-style: italic;
+}
+
+/* AI Input Shortcut */
+.ai-shortcut-section {
+  margin-top: 1.5rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.ai-shortcut-section h4 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.ai-shortcut-setting {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.ai-shortcut-label {
+  font-size: 0.8rem;
+  color: var(--color-text-secondary);
+  min-width: 70px;
+}
+
+.ai-shortcut-input {
+  padding: 0.375rem 0.75rem;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  font-family: monospace;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  min-width: 80px;
+  text-align: center;
+}
+
+.ai-shortcut-input:hover {
+  border-color: var(--color-primary);
+}
+
+.ai-shortcut-input.recording {
+  border-color: #8b5cf6;
+  background: #ede9fe;
+  animation: pulse 1s infinite;
+}
+
+.shortcut-reset {
+  padding: 0.375rem 0.75rem;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: 0.375rem;
+  font-size: 0.75rem;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.shortcut-reset:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* API Key Settings */
