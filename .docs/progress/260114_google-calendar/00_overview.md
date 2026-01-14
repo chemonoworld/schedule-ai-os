@@ -14,13 +14,13 @@
 | 1 | [01_server-oauth](./01_server-oauth.md) | ✅ 완료 | 100% |
 | 2 | [02_server-calendar-api](./02_server-calendar-api.md) | ✅ 완료 | 100% |
 | 3 | [03_desktop-integration](./03_desktop-integration.md) | ✅ 완료 | 100% |
-| 4 | 04_today-integration | 대기 | 0% |
+| 4 | [04_today-integration](./04_today-integration.md) | ✅ 완료 | 100% |
 | 5 | 05_progress-integration | 대기 | 0% |
 | 6 | 06_settings-management | 대기 | 0% |
 | 7 | 07_cleanup-local-oauth | 대기 | 0% |
 
 ## 전체 완료율
-- **43%** (3/7 서브태스크 완료)
+- **57%** (4/7 서브태스크 완료)
 
 ## 최근 업데이트
 
@@ -54,13 +54,25 @@
   - useDeepLink.ts 생성 (Deep Link 콜백 처리)
   - .env.example 업데이트 (VITE_API_BASE_URL)
   - TypeScript/Rust 빌드 성공
+- **04_today-integration 완료**:
+  - timeline.ts 타입 정의 (TimelineItem, toTimelineItems 함수)
+  - CalendarEventCard 컴포넌트 (이벤트 카드 UI)
+  - EventDetailPopup 컴포넌트 (이벤트 상세 팝업)
+  - Today 탭에 Task + Event 통합 타임라인 구현
+    - 종일 이벤트 섹션
+    - 시간대별 정렬
+    - 이벤트 클릭 시 상세 팝업
+  - 날짜 변경 시 자동 이벤트 동기화
+  - CSS 스타일 추가
+  - TypeScript/Rust 빌드 성공
 
 ## 커밋 히스토리
+- `2e70b4a` feat(desktop): Add calendar events to Today tab timeline
 - `14d927e` feat(desktop): Add server Calendar API integration with deep-link support
 - `d70fb1e` feat(server): Add Calendar API proxy endpoints
 - `0699a69` feat(server): Add Google Calendar OAuth integration
 
 ## 다음 단계
-1. **04_today-integration** - Today 탭에 캘린더 이벤트 표시
-   - 이벤트 타임라인 컴포넌트
-   - 이벤트-태스크 연동
+1. **05_progress-integration** - Progress 탭에 캘린더 이벤트 반영
+   - 완료된 이벤트 집계
+   - 히트맵에 이벤트 포함
