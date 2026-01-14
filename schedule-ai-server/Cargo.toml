@@ -32,3 +32,6 @@ jsonwebtoken = "9"
 sha2 = "0.10"
 rand = "0.8"
 urlencoding = "2"
+
+[dev-dependencies]
+tokio-test = "0.4"

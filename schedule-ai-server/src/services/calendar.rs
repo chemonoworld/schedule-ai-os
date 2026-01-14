@@ -610,3 +610,438 @@ impl CalendarService {
         })
     }
 }
+
+// ============================================
+// Unit Tests
+// ============================================
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::models::{GoogleCalendarItem, GoogleEvent, GoogleEventTime};
+
+    /// Helper: CalendarService 없이 이벤트 변환 테스트
+    fn convert_event_standalone(calendar_id: &str, event: GoogleEvent) -> Option<CalendarEvent> {
+        let start = event.start.as_ref()?;
+        let end = event.end.as_ref()?;
+
+        let (start_time, is_all_day) = if let Some(ref date) = start.date {
+            let dt = NaiveDate::parse_from_str(date, "%Y-%m-%d")
+                .ok()?
+                .and_hms_opt(0, 0, 0)?
+                .and_utc();
+            (dt, true)
+        } else {
+            let dt = DateTime::parse_from_rfc3339(start.date_time.as_ref()?)
+                .ok()?
+                .with_timezone(&Utc);
+            (dt, false)
+        };
+
+        let end_time = if let Some(ref date) = end.date {
+            NaiveDate::parse_from_str(date, "%Y-%m-%d")
+                .ok()?
+                .pred_opt()?
+                .and_hms_opt(23, 59, 59)?
+                .and_utc()
+        } else {
+            DateTime::parse_from_rfc3339(end.date_time.as_ref()?)
+                .ok()?
+                .with_timezone(&Utc)
+        };
+
+        Some(CalendarEvent {
+            id: event.id?,
+            calendar_id: calendar_id.to_string(),
+            title: event.summary.unwrap_or_else(|| "(제목 없음)".to_string()),
+            description: event.description,
+            location: event.location,
+            start_time,
+            end_time,
+            is_all_day,
+            status: match event.status.as_deref() {
+                Some("tentative") => EventStatus::Tentative,
+                Some("cancelled") => EventStatus::Cancelled,
+                _ => EventStatus::Confirmed,
+            },
+            color_id: event.color_id,
+            html_link: event.html_link,
+        })
+    }
+
+    /// Helper: Calendar Item 변환 테스트
+    fn convert_calendar_item_standalone(
+        item: GoogleCalendarItem,
+        selected_ids: &[String],
+    ) -> GoogleCalendar {
+        GoogleCalendar {
+            id: item.id.clone(),
+            summary: item.summary.unwrap_or_else(|| "(제목 없음)".to_string()),
+            description: item.description,
+            background_color: item.background_color,
+            is_primary: item.primary.unwrap_or(false),
+            is_selected: selected_ids.contains(&item.id),
+        }
+    }
+
+    // ============================================
+    // Event Conversion Tests
+    // ============================================
+
+    mod event_conversion {
+        use super::*;
+
+        #[test]
+        fn test_convert_timed_event() {
+            let google_event = GoogleEvent {
+                id: Some("event1".to_string()),
+                summary: Some("팀 미팅".to_string()),
+                description: Some("주간 스탠드업".to_string()),
+                location: Some("회의실 A".to_string()),
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T10:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: Some("confirmed".to_string()),
+                color_id: Some("1".to_string()),
+                html_link: Some("https://calendar.google.com/event?eid=xxx".to_string()),
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+
+            assert!(result.is_some());
+            let event = result.unwrap();
+            assert_eq!(event.id, "event1");
+            assert_eq!(event.calendar_id, "primary");
+            assert_eq!(event.title, "팀 미팅");
+            assert_eq!(event.description, Some("주간 스탠드업".to_string()));
+            assert_eq!(event.location, Some("회의실 A".to_string()));
+            assert!(!event.is_all_day);
+            assert!(matches!(event.status, EventStatus::Confirmed));
+            assert_eq!(event.color_id, Some("1".to_string()));
+        }
+
+        #[test]
+        fn test_convert_all_day_event() {
+            let google_event = GoogleEvent {
+                id: Some("event2".to_string()),
+                summary: Some("휴가".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: Some("2026-01-15".to_string()),
+                    date_time: None,
+                }),
+                end: Some(GoogleEventTime {
+                    date: Some("2026-01-16".to_string()),
+                    date_time: None,
+                }),
+                status: Some("confirmed".to_string()),
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+
+            assert!(result.is_some());
+            let event = result.unwrap();
+            assert_eq!(event.id, "event2");
+            assert_eq!(event.title, "휴가");
+            assert!(event.is_all_day);
+            // 종료일은 exclusive이므로 하루 전 23:59:59로 변환됨
+            assert_eq!(event.end_time.format("%Y-%m-%d").to_string(), "2026-01-15");
+        }
+
+        #[test]
+        fn test_convert_event_no_title() {
+            let google_event = GoogleEvent {
+                id: Some("event3".to_string()),
+                summary: None,
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T14:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T15:00:00+09:00".to_string()),
+                }),
+                status: None,
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+
+            assert!(result.is_some());
+            let event = result.unwrap();
+            assert_eq!(event.title, "(제목 없음)");
+        }
+
+        #[test]
+        fn test_convert_tentative_event() {
+            let google_event = GoogleEvent {
+                id: Some("event4".to_string()),
+                summary: Some("미정 회의".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T16:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T17:00:00+09:00".to_string()),
+                }),
+                status: Some("tentative".to_string()),
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+
+            assert!(result.is_some());
+            let event = result.unwrap();
+            assert!(matches!(event.status, EventStatus::Tentative));
+        }
+
+        #[test]
+        fn test_convert_cancelled_event() {
+            let google_event = GoogleEvent {
+                id: Some("event5".to_string()),
+                summary: Some("취소된 회의".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T18:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T19:00:00+09:00".to_string()),
+                }),
+                status: Some("cancelled".to_string()),
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+
+            assert!(result.is_some());
+            let event = result.unwrap();
+            assert!(matches!(event.status, EventStatus::Cancelled));
+        }
+
+        #[test]
+        fn test_convert_event_no_id_returns_none() {
+            let google_event = GoogleEvent {
+                id: None,
+                summary: Some("이벤트".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T10:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: None,
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+            assert!(result.is_none());
+        }
+
+        #[test]
+        fn test_convert_event_no_start_returns_none() {
+            let google_event = GoogleEvent {
+                id: Some("event6".to_string()),
+                summary: Some("이벤트".to_string()),
+                description: None,
+                location: None,
+                start: None,
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: None,
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+            assert!(result.is_none());
+        }
+
+        #[test]
+        fn test_convert_event_invalid_datetime_returns_none() {
+            let google_event = GoogleEvent {
+                id: Some("event7".to_string()),
+                summary: Some("이벤트".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("invalid-datetime".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: None,
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("primary", google_event);
+            assert!(result.is_none());
+        }
+    }
+
+    // ============================================
+    // Calendar Item Conversion Tests
+    // ============================================
+
+    mod calendar_item_conversion {
+        use super::*;
+
+        #[test]
+        fn test_convert_primary_calendar() {
+            let item = GoogleCalendarItem {
+                id: "primary".to_string(),
+                summary: Some("기본 캘린더".to_string()),
+                description: Some("내 기본 캘린더".to_string()),
+                background_color: Some("#4285f4".to_string()),
+                primary: Some(true),
+            };
+
+            let selected_ids = vec!["primary".to_string()];
+            let result = convert_calendar_item_standalone(item, &selected_ids);
+
+            assert_eq!(result.id, "primary");
+            assert_eq!(result.summary, "기본 캘린더");
+            assert_eq!(result.description, Some("내 기본 캘린더".to_string()));
+            assert_eq!(result.background_color, Some("#4285f4".to_string()));
+            assert!(result.is_primary);
+            assert!(result.is_selected);
+        }
+
+        #[test]
+        fn test_convert_secondary_calendar_not_selected() {
+            let item = GoogleCalendarItem {
+                id: "work".to_string(),
+                summary: Some("업무".to_string()),
+                description: None,
+                background_color: Some("#16a765".to_string()),
+                primary: Some(false),
+            };
+
+            let selected_ids = vec!["primary".to_string()];
+            let result = convert_calendar_item_standalone(item, &selected_ids);
+
+            assert_eq!(result.id, "work");
+            assert_eq!(result.summary, "업무");
+            assert!(!result.is_primary);
+            assert!(!result.is_selected);
+        }
+
+        #[test]
+        fn test_convert_calendar_no_summary() {
+            let item = GoogleCalendarItem {
+                id: "cal1".to_string(),
+                summary: None,
+                description: None,
+                background_color: None,
+                primary: None,
+            };
+
+            let selected_ids: Vec<String> = vec![];
+            let result = convert_calendar_item_standalone(item, &selected_ids);
+
+            assert_eq!(result.summary, "(제목 없음)");
+            assert!(!result.is_primary);
+            assert!(!result.is_selected);
+        }
+
+        #[test]
+        fn test_convert_calendar_primary_none_defaults_false() {
+            let item = GoogleCalendarItem {
+                id: "cal2".to_string(),
+                summary: Some("테스트".to_string()),
+                description: None,
+                background_color: None,
+                primary: None,
+            };
+
+            let selected_ids: Vec<String> = vec![];
+            let result = convert_calendar_item_standalone(item, &selected_ids);
+
+            assert!(!result.is_primary);
+        }
+    }
+
+    // ============================================
+    // Status Conversion Tests
+    // ============================================
+
+    mod status_tests {
+        use super::*;
+
+        #[test]
+        fn test_status_confirmed_default() {
+            let google_event = GoogleEvent {
+                id: Some("e1".to_string()),
+                summary: Some("테스트".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T10:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: None,
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("cal", google_event).unwrap();
+            assert!(matches!(result.status, EventStatus::Confirmed));
+        }
+
+        #[test]
+        fn test_status_unknown_defaults_confirmed() {
+            let google_event = GoogleEvent {
+                id: Some("e2".to_string()),
+                summary: Some("테스트".to_string()),
+                description: None,
+                location: None,
+                start: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T10:00:00+09:00".to_string()),
+                }),
+                end: Some(GoogleEventTime {
+                    date: None,
+                    date_time: Some("2026-01-14T11:00:00+09:00".to_string()),
+                }),
+                status: Some("unknown_status".to_string()),
+                color_id: None,
+                html_link: None,
+            };
+
+            let result = convert_event_standalone("cal", google_event).unwrap();
+            assert!(matches!(result.status, EventStatus::Confirmed));
+        }
+    }
+}

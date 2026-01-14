@@ -16,11 +16,11 @@
 | 3 | [03_desktop-integration](./03_desktop-integration.md) | ✅ 완료 | 100% |
 | 4 | [04_today-integration](./04_today-integration.md) | ✅ 완료 | 100% |
 | 5 | [05_progress-integration](./05_progress-integration.md) | ✅ 완료 | 100% |
-| 6 | 06_settings-management | 대기 | 0% |
-| 7 | 07_cleanup-local-oauth | 대기 | 0% |
+| 6 | [06_settings-management](./06_settings-management.md) | ✅ 완료 | 100% |
+| 7 | [07_cleanup-local-oauth](./07_cleanup-local-oauth.md) | ✅ 완료 | 100% |
 
 ## 전체 완료율
-- **71%** (5/7 서브태스크 완료)
+- **100%** (7/7 서브태스크 완료) 🎉
 
 ## 최근 업데이트
 
@@ -75,15 +75,54 @@
   - 통계 섹션에 "이벤트" 통계 카드 추가 (캘린더 연결 시)
   - CSS 스타일 추가 (event-dot, has-events)
   - TypeScript/Rust 빌드 성공
+- **06_settings-management 완료**:
+  - i18n 번역 추가 (ko/en)
+  - Google Calendar 연결/해제 UI
+  - 캘린더 선택 체크박스 UI
+  - 동기화 설정 UI (자동/수동)
+  - 마지막 동기화 시간 및 수동 동기화 버튼
+  - CSS 스타일 추가
+  - TypeScript/Rust 빌드 성공
+- **07_cleanup-local-oauth 완료**:
+  - google_auth 모듈 삭제 (PKCE, Keyring, OAuth 상태 관리)
+  - lib.rs에서 모듈 import 및 커맨드 등록 제거
+  - Cargo.toml에서 불필요한 의존성 5개 제거
+    - keyring, rand, sha2, base64, url
+  - TypeScript/Rust 빌드 성공
 
 ## 커밋 히스토리
-- `8de8624` feat(desktop): Add calendar events to Progress tab heatmap
-- `2e70b4a` feat(desktop): Add calendar events to Today tab timeline
-- `14d927e` feat(desktop): Add server Calendar API integration with deep-link support
+- `5ca55f0` fix(desktop): Add useDeepLink hook call in App.tsx
+- `becd3f2` refactor(desktop): Remove local OAuth code (now handled by server)
+- `37f814b` feat(desktop): Add Google Calendar settings UI in Settings tab
+- `1cb46de` feat(desktop): Add calendar events to Progress tab heatmap
+- `c5d3f6e` feat(desktop): Add calendar events to Today tab timeline
+- `ddb7b6d` feat(desktop): Add server Calendar API integration with deep-link support
 - `d70fb1e` feat(server): Add Calendar API proxy endpoints
 - `0699a69` feat(server): Add Google Calendar OAuth integration
 
-## 다음 단계
-1. **06_settings-management** - Settings에서 캘린더 연동 관리
-   - 연결/해제 UI
-   - 캘린더 선택 UI
+## 스펙 리뷰 및 버그 수정
+
+### 발견된 버그
+- **useDeepLink 호출 누락**: `useDeepLink` 훅이 구현되었으나 App.tsx에서 호출되지 않음
+  - **영향**: OAuth 콜백이 처리되지 않아 연결 실패
+  - **수정**: App.tsx에 `useDeepLink()` 호출 추가
+  - **커밋**: `5ca55f0`
+
+### 스펙 적합성
+- 서버: 95%+ (프로덕션 개선 사항 일부 남음)
+- Desktop: 100% (버그 수정 후)
+
+## 테스트 계획
+- 테스트 코드 작성 계획 문서: [260114_google-calendar-tests](../../plans/260114_google-calendar-tests/00_overview.md)
+- 수동 테스트 체크리스트: [manual-testing-checklist.md](../../plans/260114_google-calendar-tests/manual-testing-checklist.md)
+
+## 완료!
+모든 서브태스크가 완료되었습니다.
+
+### 구현된 기능 요약
+- **서버**: Google Calendar OAuth + API 프록시
+- **Desktop**: 서버 API 연동 + Deep Link 콜백
+- **Today 탭**: Task + Event 통합 타임라인
+- **Progress 탭**: 히트맵에 이벤트 표시
+- **Settings 탭**: 캘린더 연결/해제/선택 UI
+- **코드 정리**: 로컬 OAuth 코드 제거
