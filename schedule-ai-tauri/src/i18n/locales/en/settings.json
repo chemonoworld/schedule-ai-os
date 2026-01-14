@@ -45,6 +45,26 @@
     "placeholder": "e.g., I prefer to do creative work in the morning...",
     "saved": "Saved"
   },
+  "googleCalendar": {
+    "title": "Google Calendar",
+    "connect": "Connect Google Account",
+    "connectDescription": "Connect your Google Calendar to see your events in Schedule AI.",
+    "disconnect": "Disconnect",
+    "disconnectConfirm": "Are you sure you want to disconnect Google Calendar? All synced events will be removed.",
+    "account": "Connected Account",
+    "calendars": "Calendars to Display",
+    "primary": "Primary",
+    "noCalendars": "No calendars available.",
+    "syncSettings": "Sync Settings",
+    "syncMode": "Sync Mode",
+    "syncAuto": "Automatic (Recommended)",
+    "syncManual": "Manual",
+    "lastSync": "Last Synced",
+    "neverSynced": "Never synced",
+    "syncNow": "Sync Now",
+    "connecting": "Connecting...",
+    "loginRequired": "Please login first"
+  },
   "export": {
     "title": "Data Export / Import",
     "description": "Export or import data in Markdown or JSON format.",

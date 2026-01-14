@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use axum::{
-    extract::{Query, State},
+    extract::Query,
     middleware as axum_middleware,
     response::{IntoResponse, Redirect, Response},
     routing::{get, post},
@@ -17,7 +17,7 @@ use crate::{
     error::{AppError, AppResult},
     middleware::auth_middleware,
     models::UserResponse,
-    services::{AuthResponse, AuthService, Claims, RefreshResponse},
+    services::{AuthService, Claims, RefreshResponse},
     AppState,
 };
 
@@ -124,7 +124,7 @@ async fn google_callback(
 
     // For desktop app, redirect to deep link with tokens
     // For web, could set cookies instead
-    let redirect_url = format!(
+    let _redirect_url = format!(
         "scheduleai://auth/callback?access_token={}&refresh_token={}&expires_in={}",
         auth_response.access_token, auth_response.refresh_token, auth_response.expires_in
     );

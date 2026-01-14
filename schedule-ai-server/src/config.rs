@@ -10,6 +10,7 @@ pub struct Config {
     pub google_client_id: String,
     pub google_client_secret: String,
     pub google_redirect_uri: String,
+    pub google_calendar_redirect_uri: Option<String>,
 
     // JWT
     pub jwt_secret: String,
@@ -41,6 +42,7 @@ impl Config {
             google_client_secret: env::var("GOOGLE_CLIENT_SECRET").unwrap_or_default(),
             google_redirect_uri: env::var("GOOGLE_REDIRECT_URI")
                 .unwrap_or_else(|_| "http://localhost:3000/api/auth/google/callback".to_string()),
+            google_calendar_redirect_uri: env::var("GOOGLE_CALENDAR_REDIRECT_URI").ok(),
 
             // JWT
             jwt_secret: env::var("JWT_SECRET")

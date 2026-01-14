@@ -45,6 +45,26 @@
     "placeholder": "예: 나는 아침에 집중이 잘 된다...",
     "saved": "✓ 저장됨"
   },
+  "googleCalendar": {
+    "title": "Google Calendar",
+    "connect": "Google 계정 연결",
+    "connectDescription": "Google Calendar를 연결하면 일정을 Schedule AI에서 함께 볼 수 있습니다.",
+    "disconnect": "연결 해제",
+    "disconnectConfirm": "정말 Google Calendar 연결을 해제하시겠습니까? 동기화된 모든 이벤트가 삭제됩니다.",
+    "account": "연결된 계정",
+    "calendars": "표시할 캘린더",
+    "primary": "기본",
+    "noCalendars": "사용 가능한 캘린더가 없습니다.",
+    "syncSettings": "동기화 설정",
+    "syncMode": "동기화 방식",
+    "syncAuto": "자동 (권장)",
+    "syncManual": "수동",
+    "lastSync": "마지막 동기화",
+    "neverSynced": "아직 동기화하지 않음",
+    "syncNow": "지금 동기화",
+    "connecting": "연결 중...",
+    "loginRequired": "로그인이 필요합니다"
+  },
   "export": {
     "title": "데이터 내보내기 / 가져오기",
     "description": "데이터를 마크다운 또는 JSON 형식으로 내보내거나 가져올 수 있습니다.",

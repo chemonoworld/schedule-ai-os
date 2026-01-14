@@ -7,6 +7,9 @@ import { useTaskStore } from './stores/taskStore';
 import { usePlanStore } from './stores/planStore';
 import { useFocusStore } from './stores/focusStore';
 import { useSettingsStore, type Language } from './stores/settingsStore';
+import { useCalendarStore, type CalendarEvent } from './stores/calendarStore';
+import { useDeepLink } from './hooks/useDeepLink';
+import { toTimelineItems, isCalendarEvent } from './types/timeline';
 import { formatDate, addDays } from '@schedule-ai/core';
 import { getDailyProgressByYear, getRecentDailyProgress } from './db';
 import type { DailyProgress as DBDailyProgress } from './db';
@@ -47,6 +50,9 @@ interface HeatmapData {
   level: number;
   completionRate: number;
   taskCount: number;
+  // 캘린더 이벤트 관련 필드 (선택적)
+  eventCount?: number;
+  hasEvents?: boolean;
 }
 
 // Swipeable Subtask Component
@@ -382,6 +388,148 @@ function SwipeableTask({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+// Calendar Event Card Component
+interface CalendarEventCardProps {
+  event: import('./stores/calendarStore').CalendarEvent;
+  onClick?: () => void;
+}
+
+function CalendarEventCard({ event, onClick }: CalendarEventCardProps) {
+  const { t } = useTranslation();
+
+  const formatTime = (isoString: string) => {
+    return new Date(isoString).toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  // Google Calendar 색상 코드를 hex 색상으로 변환
+  const getEventColor = (colorId: string | null) => {
+    const colors: Record<string, string> = {
+      '1': '#7986cb', // Lavender
+      '2': '#33b679', // Sage
+      '3': '#8e24aa', // Grape
+      '4': '#e67c73', // Flamingo
+      '5': '#f6bf26', // Banana
+      '6': '#f4511e', // Tangerine
+      '7': '#039be5', // Peacock
+      '8': '#616161', // Graphite
+      '9': '#3f51b5', // Blueberry
+      '10': '#0b8043', // Basil
+      '11': '#d50000', // Tomato
+    };
+    return colors[colorId ?? ''] ?? '#4285f4'; // Default Google Blue
+  };
+
+  return (
+    <div
+      className="calendar-event-card"
+      onClick={onClick}
+      style={{
+        borderLeftColor: getEventColor(event.colorId),
+      }}
+    >
+      <div className="event-header">
+        <span className="event-icon">📅</span>
+        <span className="event-title">{event.title}</span>
+      </div>
+
+      <div className="event-time">
+        {event.isAllDay ? (
+          <span className="all-day-badge">{t('common:time.allDay', '종일')}</span>
+        ) : (
+          <span>
+            {formatTime(event.startTime)} - {formatTime(event.endTime)}
+          </span>
+        )}
+      </div>
+
+      {event.location && (
+        <div className="event-location">
+          <span className="location-icon">📍</span>
+          {event.location}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Event Detail Popup Component
+interface EventDetailPopupProps {
+  event: import('./stores/calendarStore').CalendarEvent;
+  onClose: () => void;
+}
+
+function EventDetailPopup({ event, onClose }: EventDetailPopupProps) {
+  const { t } = useTranslation();
+
+  const formatTime = (isoString: string) => {
+    return new Date(isoString).toLocaleTimeString('ko-KR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+    });
+  };
+
+  const formatDate = (isoString: string) => {
+    return new Date(isoString).toLocaleDateString('ko-KR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      weekday: 'long',
+    });
+  };
+
+  return (
+    <div className="event-detail-overlay" onClick={onClose}>
+      <div className="event-detail-popup" onClick={(e) => e.stopPropagation()}>
+        <div className="popup-header">
+          <h3>{event.title}</h3>
+          <button className="popup-close-btn" onClick={onClose}>✕</button>
+        </div>
+
+        <div className="popup-content">
+          <div className="detail-row">
+            <span className="detail-icon">🕐</span>
+            <span>
+              {event.isAllDay
+                ? `${formatDate(event.startTime)} - ${t('common:time.allDay', '종일')}`
+                : `${formatDate(event.startTime)} ${formatTime(event.startTime)} - ${formatTime(event.endTime)}`
+              }
+            </span>
+          </div>
+
+          {event.location && (
+            <div className="detail-row">
+              <span className="detail-icon">📍</span>
+              <span>{event.location}</span>
+            </div>
+          )}
+
+          {event.description && (
+            <div className="detail-row description">
+              <p>{event.description}</p>
+            </div>
+          )}
+
+          {event.htmlLink && (
+            <a
+              href={event.htmlLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="open-in-google-btn"
+            >
+              {t('calendar:openInGoogle', 'Google Calendar에서 열기')} →
+            </a>
+          )}
+        </div>
+      </div>
     </div>
   );
 }
@@ -911,11 +1059,35 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
 
 function App() {
   const { t } = useTranslation();
+
+  // Deep Link 리스너 설정 (OAuth 콜백 처리)
+  useDeepLink();
+
   const { language, setLanguage } = useSettingsStore();
   const [activeTab, setActiveTab] = useState<Tab>('today');
   const { tasks, selectedDate, isLoading, loadTasks, setSelectedDate, updateTaskStatus, updateTask, deleteTask, createTask, createSubTask, updateSubTaskStatus, updateSubTask, deleteSubTask } = useTaskStore();
   const { plans, loadPlans, createPlan, updatePlan, deletePlan: deletePlanFromStore } = usePlanStore();
   const { isActive, checkFrontmostApp, tick } = useFocusStore();
+  const {
+    isConnected: isCalendarConnected,
+    userEmail: calendarUserEmail,
+    isLoading: isCalendarLoading,
+    error: calendarError,
+    calendars,
+    selectedCalendarIds,
+    syncMode,
+    lastSyncAt: calendarLastSyncAt,
+    connect: connectCalendar,
+    disconnect: disconnectCalendar,
+    syncCalendars,
+    toggleCalendarSelection,
+    getEventsForDate,
+    syncEvents,
+    syncEventsForYear,
+    getEventCountsByDate,
+    setSyncMode,
+  } = useCalendarStore();
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [newPlanInput, setNewPlanInput] = useState('');
   const [editingTask, setEditingTask] = useState<Task | null>(null);
@@ -1075,6 +1247,16 @@ function App() {
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // 캘린더 이벤트 동기화 (날짜 변경 시)
+  useEffect(() => {
+    if (!isCalendarConnected) return;
+
+    // 선택된 날짜 기준 ±1일 범위로 이벤트 동기화
+    const prevDay = formatDate(addDays(new Date(selectedDate), -1));
+    const nextDay = formatDate(addDays(new Date(selectedDate), 1));
+    syncEvents(prevDay, nextDay);
+  }, [selectedDate, isCalendarConnected, syncEvents]);
 
   // 전역 포커스 모드 폴링 (탭 이동해도 유지)
   useEffect(() => {
@@ -2089,7 +2271,24 @@ function App() {
           year,
           allProgress,
         });
-        const activeDays = heatmap.filter(d => d.taskCount > 0);
+
+        // 캘린더 이벤트 동기화 및 히트맵에 병합
+        if (isCalendarConnected) {
+          console.log('[Progress] Syncing calendar events for year:', year);
+          await syncEventsForYear(year);
+          const eventCounts = getEventCountsByDate();
+          console.log('[Progress] Event counts:', eventCounts.size, 'dates with events');
+
+          // 이벤트 수를 히트맵 데이터에 병합
+          for (const day of heatmap) {
+            if (day.taskCount === -1) continue; // placeholder 셀 건너뛰기
+            const eventCount = eventCounts.get(day.date) || 0;
+            day.eventCount = eventCount;
+            day.hasEvents = eventCount > 0;
+          }
+        }
+
+        const activeDays = heatmap.filter(d => d.taskCount > 0 || (d.eventCount && d.eventCount > 0));
         console.log('[Progress] Heatmap data received:', heatmap.length, 'first date:', heatmap[0]?.date, 'active days:', activeDays.length, activeDays.slice(0, 3));
         setHeatmapData(heatmap);
 
@@ -2124,7 +2323,8 @@ function App() {
     };
 
     loadProgressData(progressYear);
-  }, [activeTab, progressYear]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeTab, progressYear, isCalendarConnected]);
 
   const today = formatDate(new Date());
   const isToday = selectedDate === today;
@@ -2241,43 +2441,122 @@ function App() {
               </div>
             </div>
 
-            {/* Task List */}
+            {/* Timeline (Tasks + Calendar Events) */}
             <div className="task-list">
               {isLoading ? (
                 <div className="loading">{t('common:status.loading')}</div>
-              ) : tasks.length === 0 ? (
-                <div className="empty-state">
-                  <p>{t('today:empty.title')}</p>
-                  <p className="hint">{t('today:empty.hint')}</p>
-                </div>
-              ) : (
-                tasks.map((task) => (
-                  <SwipeableTask
-                    key={task.id}
-                    task={task}
-                    onComplete={() =>
-                      updateTaskStatus(
-                        task.id,
-                        task.status === 'completed' ? 'pending' : 'completed'
-                      )
-                    }
-                    onDelete={() => deleteTask(task.id)}
-                    onEdit={() => handleEditTask(task)}
-                    onAddSubtask={async (title) => {
-                      await createSubTask({ taskId: task.id, title });
-                    }}
-                    onSubTaskComplete={(subTaskId) => {
-                      const subtask = task.subtasks?.find(st => st.id === subTaskId);
-                      if (subtask) {
-                        handleSubTaskComplete(task.id, subTaskId, subtask.status);
-                      }
-                    }}
-                    onSubTaskDelete={(subTaskId) => deleteSubTask(task.id, subTaskId)}
-                    onSubTaskEdit={(subtask) => handleEditSubtask(task.id, subtask)}
-                  />
-                ))
-              )}
+              ) : (() => {
+                const todayEvents = getEventsForDate(selectedDate);
+                const timelineItems = toTimelineItems(tasks, todayEvents);
+                const allDayItems = timelineItems.filter(item => item.isAllDay);
+                const timedItems = timelineItems.filter(item => !item.isAllDay);
+
+                if (tasks.length === 0 && todayEvents.length === 0) {
+                  return (
+                    <div className="empty-state">
+                      <p>{t('today:empty.title')}</p>
+                      <p className="hint">{t('today:empty.hint')}</p>
+                    </div>
+                  );
+                }
+
+                return (
+                  <>
+                    {/* 종일 이벤트 섹션 */}
+                    {allDayItems.length > 0 && (
+                      <div className="all-day-section">
+                        <h4 className="timeline-section-title">{t('today:allDay', '종일')}</h4>
+                        {allDayItems.map((item) =>
+                          isCalendarEvent(item.data) ? (
+                            <CalendarEventCard
+                              key={`event-${item.id}`}
+                              event={item.data}
+                              onClick={() => setSelectedEvent(item.data as CalendarEvent)}
+                            />
+                          ) : (
+                            <SwipeableTask
+                              key={`task-${item.id}`}
+                              task={item.data as Task}
+                              onComplete={() =>
+                                updateTaskStatus(
+                                  item.id,
+                                  (item.data as Task).status === 'completed' ? 'pending' : 'completed'
+                                )
+                              }
+                              onDelete={() => deleteTask(item.id)}
+                              onEdit={() => handleEditTask(item.data as Task)}
+                              onAddSubtask={async (title) => {
+                                await createSubTask({ taskId: item.id, title });
+                              }}
+                              onSubTaskComplete={(subTaskId) => {
+                                const task = item.data as Task;
+                                const subtask = task.subtasks?.find(st => st.id === subTaskId);
+                                if (subtask) {
+                                  handleSubTaskComplete(item.id, subTaskId, subtask.status);
+                                }
+                              }}
+                              onSubTaskDelete={(subTaskId) => deleteSubTask(item.id, subTaskId)}
+                              onSubTaskEdit={(subtask) => handleEditSubtask(item.id, subtask)}
+                            />
+                          )
+                        )}
+                      </div>
+                    )}
+
+                    {/* 시간대별 이벤트 & 태스크 */}
+                    {timedItems.length > 0 && (
+                      <div className="timed-items-section">
+                        {allDayItems.length > 0 && (
+                          <h4 className="timeline-section-title">{t('today:scheduled', '일정')}</h4>
+                        )}
+                        {timedItems.map((item) =>
+                          isCalendarEvent(item.data) ? (
+                            <CalendarEventCard
+                              key={`event-${item.id}`}
+                              event={item.data}
+                              onClick={() => setSelectedEvent(item.data as CalendarEvent)}
+                            />
+                          ) : (
+                            <SwipeableTask
+                              key={`task-${item.id}`}
+                              task={item.data as Task}
+                              onComplete={() =>
+                                updateTaskStatus(
+                                  item.id,
+                                  (item.data as Task).status === 'completed' ? 'pending' : 'completed'
+                                )
+                              }
+                              onDelete={() => deleteTask(item.id)}
+                              onEdit={() => handleEditTask(item.data as Task)}
+                              onAddSubtask={async (title) => {
+                                await createSubTask({ taskId: item.id, title });
+                              }}
+                              onSubTaskComplete={(subTaskId) => {
+                                const task = item.data as Task;
+                                const subtask = task.subtasks?.find(st => st.id === subTaskId);
+                                if (subtask) {
+                                  handleSubTaskComplete(item.id, subTaskId, subtask.status);
+                                }
+                              }}
+                              onSubTaskDelete={(subTaskId) => deleteSubTask(item.id, subTaskId)}
+                              onSubTaskEdit={(subtask) => handleEditSubtask(item.id, subtask)}
+                            />
+                          )
+                        )}
+                      </div>
+                    )}
+                  </>
+                );
+              })()}
             </div>
+
+            {/* Event Detail Popup */}
+            {selectedEvent && (
+              <EventDetailPopup
+                event={selectedEvent}
+                onClose={() => setSelectedEvent(null)}
+              />
+            )}
 
             {/* Add Task Form */}
             <form className="add-task-form" onSubmit={inputMode === 'manual' ? handleCreateTask : handleAICreateTask}>
@@ -2689,14 +2968,16 @@ function App() {
                         ) : (
                           <div
                             key={day.date}
-                            className={`heatmap-cell level-${day.level}`}
-                            data-tooltip={`${day.date}: ${Math.round(day.completionRate * 100)}% (${day.taskCount})`}
+                            className={`heatmap-cell level-${day.level}${day.hasEvents ? ' has-events' : ''}`}
+                            data-tooltip={`${day.date}: ${Math.round(day.completionRate * 100)}% (${day.taskCount} tasks${day.eventCount ? `, ${day.eventCount} events` : ''})`}
                             onClick={() => {
                               setSelectedHeatmapDate(day.date);
                               setSelectedDate(day.date);
                               setActiveTab('today');
                             }}
-                          />
+                          >
+                            {day.hasEvents && <span className="event-dot" />}
+                          </div>
                         )
                       ))}
                     </div>
@@ -2718,7 +2999,7 @@ function App() {
             <div className="progress-stats">
               <div className="stat-card">
                 <span className="stat-value">
-                  {heatmapData.filter(d => d.taskCount > 0).length}
+                  {heatmapData.filter(d => d.taskCount > 0 || (d.eventCount && d.eventCount > 0)).length}
                 </span>
                 <span className="stat-label">{t('progress:stats.activeDays')}</span>
               </div>
@@ -2739,6 +3020,14 @@ function App() {
                 </span>
                 <span className="stat-label">{t('progress:stats.achievementRate')}</span>
               </div>
+              {isCalendarConnected && (
+                <div className="stat-card">
+                  <span className="stat-value">
+                    {heatmapData.reduce((sum, d) => sum + (d.eventCount || 0), 0)}
+                  </span>
+                  <span className="stat-label">{t('progress:stats.totalEvents', '이벤트')}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -3003,6 +3292,165 @@ function App() {
                 >
                   {planRulesSaved ? t('settings:planRules.saved') : t('common:buttons.save')}
                 </button>
+              </div>
+            </div>
+
+            {/* Google Calendar Settings */}
+            <div className="settings-section">
+              <h3>{t('settings:googleCalendar.title')}</h3>
+
+              <div className="google-calendar-settings">
+                {!isCalendarConnected ? (
+                  // 미연결 상태
+                  <div className="calendar-connect-section">
+                    <p className="settings-description">
+                      {t('settings:googleCalendar.connectDescription')}
+                    </p>
+                    <button
+                      className="calendar-connect-button"
+                      onClick={connectCalendar}
+                      disabled={isCalendarLoading}
+                    >
+                      {isCalendarLoading ? (
+                        <>
+                          <span className="loading-spinner-small" />
+                          {t('settings:googleCalendar.connecting')}
+                        </>
+                      ) : (
+                        <>
+                          <svg className="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+                          </svg>
+                          {t('settings:googleCalendar.connect')}
+                        </>
+                      )}
+                    </button>
+                    {calendarError && (
+                      <p className="calendar-error">{calendarError}</p>
+                    )}
+                  </div>
+                ) : (
+                  // 연결됨 상태
+                  <div className="calendar-connected-section">
+                    {/* 연결된 계정 정보 */}
+                    <div className="calendar-account-info">
+                      <div className="account-row">
+                        <span className="account-label">{t('settings:googleCalendar.account')}</span>
+                        <span className="account-value">{calendarUserEmail}</span>
+                      </div>
+                      <button
+                        className="calendar-disconnect-button"
+                        onClick={() => {
+                          if (window.confirm(t('settings:googleCalendar.disconnectConfirm'))) {
+                            disconnectCalendar();
+                          }
+                        }}
+                        disabled={isCalendarLoading}
+                      >
+                        {t('settings:googleCalendar.disconnect')}
+                      </button>
+                    </div>
+
+                    {/* 캘린더 선택 */}
+                    <div className="calendar-selection">
+                      <div className="selection-header">
+                        <span className="selection-label">
+                          {t('settings:googleCalendar.calendars')}
+                        </span>
+                        <button
+                          className="calendar-refresh-button"
+                          onClick={syncCalendars}
+                          disabled={isCalendarLoading}
+                        >
+                          {isCalendarLoading ? '...' : '↻'}
+                        </button>
+                      </div>
+
+                      <div className="calendar-list">
+                        {calendars.length === 0 ? (
+                          <p className="no-calendars">{t('settings:googleCalendar.noCalendars')}</p>
+                        ) : (
+                          calendars.map(calendar => (
+                            <label
+                              key={calendar.id}
+                              className="calendar-item"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedCalendarIds.includes(calendar.id)}
+                                onChange={() => toggleCalendarSelection(calendar.id)}
+                              />
+                              <span
+                                className="calendar-color-dot"
+                                style={{ background: calendar.backgroundColor || '#4285f4' }}
+                              />
+                              <span className="calendar-name">
+                                {calendar.summary}
+                                {calendar.isPrimary && (
+                                  <span className="calendar-primary-badge">
+                                    {t('settings:googleCalendar.primary')}
+                                  </span>
+                                )}
+                              </span>
+                            </label>
+                          ))
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 동기화 설정 */}
+                    <div className="calendar-sync-settings">
+                      <h4>{t('settings:googleCalendar.syncSettings')}</h4>
+
+                      <div className="sync-setting-row">
+                        <span className="sync-label">{t('settings:googleCalendar.syncMode')}</span>
+                        <select
+                          className="sync-mode-select"
+                          value={syncMode}
+                          onChange={(e) => setSyncMode(e.target.value as 'auto' | 'manual')}
+                        >
+                          <option value="auto">{t('settings:googleCalendar.syncAuto')}</option>
+                          <option value="manual">{t('settings:googleCalendar.syncManual')}</option>
+                        </select>
+                      </div>
+
+                      <div className="sync-setting-row">
+                        <span className="sync-label">{t('settings:googleCalendar.lastSync')}</span>
+                        <span className="sync-value">
+                          {calendarLastSyncAt
+                            ? new Date(calendarLastSyncAt).toLocaleString()
+                            : t('settings:googleCalendar.neverSynced')
+                          }
+                        </span>
+                      </div>
+
+                      <button
+                        className="sync-now-button"
+                        onClick={() => {
+                          const today = new Date();
+                          const startDate = new Date(today);
+                          startDate.setMonth(startDate.getMonth() - 1);
+                          const endDate = new Date(today);
+                          endDate.setMonth(endDate.getMonth() + 3);
+                          syncEvents(
+                            startDate.toISOString().split('T')[0],
+                            endDate.toISOString().split('T')[0]
+                          );
+                        }}
+                        disabled={isCalendarLoading}
+                      >
+                        {isCalendarLoading ? '...' : t('settings:googleCalendar.syncNow')}
+                      </button>
+                    </div>
+
+                    {calendarError && (
+                      <p className="calendar-error">{calendarError}</p>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 

@@ -42,6 +42,11 @@
   "plugins": {
     "sql": {
       "preload": ["sqlite:schedule.db"]
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["scheduleai"]
+      }
     }
   }
 }
