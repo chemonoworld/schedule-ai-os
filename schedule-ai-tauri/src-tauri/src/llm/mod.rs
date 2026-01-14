@@ -169,7 +169,7 @@ impl LLMService {
     }
 }
 
-// OpenAI Provider for streaming
+// OpenAI Provider for Structured Output
 pub struct OpenAIProvider {
     client: reqwest::Client,
     api_key: String,
@@ -183,74 +183,6 @@ impl OpenAIProvider {
             api_key,
             model: "gpt-4o-mini".to_string(),
         }
-    }
-
-    pub fn with_model(mut self, model: String) -> Self {
-        self.model = model;
-        self
-    }
-
-    /// Stream completion - returns a response stream
-    pub async fn stream_complete(
-        &self,
-        messages: Vec<LLMMessage>,
-    ) -> Result<impl futures::Stream<Item = Result<String, LLMError>>, LLMError> {
-        use futures::StreamExt;
-
-        #[derive(Serialize)]
-        struct OpenAIRequest {
-            model: String,
-            messages: Vec<OpenAIMessage>,
-            stream: bool,
-            max_tokens: u32,
-        }
-
-        #[derive(Serialize)]
-        struct OpenAIMessage {
-            role: String,
-            content: String,
-        }
-
-        let openai_messages: Vec<OpenAIMessage> = messages
-            .into_iter()
-            .map(|m| OpenAIMessage {
-                role: m.role,
-                content: m.content,
-            })
-            .collect();
-
-        let request = OpenAIRequest {
-            model: self.model.clone(),
-            messages: openai_messages,
-            stream: true,
-            max_tokens: 500,
-        };
-
-        let response = self
-            .client
-            .post("https://api.openai.com/v1/chat/completions")
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .header("Content-Type", "application/json")
-            .json(&request)
-            .send()
-            .await?;
-
-        if !response.status().is_success() {
-            let error_text = response.text().await.unwrap_or_default();
-            return Err(LLMError::ApiError(error_text));
-        }
-
-        // Convert to stream
-        let stream = response.bytes_stream().map(|chunk| {
-            chunk
-                .map_err(LLMError::RequestError)
-                .and_then(|bytes| {
-                    let text = String::from_utf8_lossy(&bytes).to_string();
-                    Ok(text)
-                })
-        });
-
-        Ok(stream)
     }
 
     /// Structured output completion with JSON schema
@@ -354,34 +286,4 @@ impl OpenAIProvider {
 
         Ok(content)
     }
-}
-
-/// Parse SSE data line to extract content
-pub fn parse_sse_content(line: &str) -> Option<String> {
-    if !line.starts_with("data: ") {
-        return None;
-    }
-    let data = &line[6..];
-    if data == "[DONE]" {
-        return None;
-    }
-
-    #[derive(Deserialize)]
-    struct SSEResponse {
-        choices: Vec<SSEChoice>,
-    }
-
-    #[derive(Deserialize)]
-    struct SSEChoice {
-        delta: SSEDelta,
-    }
-
-    #[derive(Deserialize)]
-    struct SSEDelta {
-        content: Option<String>,
-    }
-
-    serde_json::from_str::<SSEResponse>(data)
-        .ok()
-        .and_then(|r| r.choices.first()?.delta.content.clone())
 }
