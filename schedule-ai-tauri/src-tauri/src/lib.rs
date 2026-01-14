@@ -1,7 +1,6 @@
 mod commands;
 mod export;
 mod focus;
-mod google_auth;
 mod import;
 mod ipc_server;
 mod llm;
@@ -55,9 +54,6 @@ fn get_migrations() -> Vec<Migration> {
 struct CurrentShortcut(Mutex<Shortcut>);
 struct ApiKeyState(Mutex<Option<String>>);
 struct IpcState(Arc<IpcServerState>);
-
-// Google OAuth 상태 관리를 위한 re-export
-use google_auth::OAuthState;
 
 fn toggle_window(app: &AppHandle) {
     if let Some(window) = app.get_webview_window("main") {
@@ -1087,7 +1083,6 @@ pub fn run() {
         .manage(CurrentShortcut(Mutex::new(default_shortcut.clone())))
         .manage(ApiKeyState(Mutex::new(None)))
         .manage(IpcState(Arc::new(IpcServerState::new())))
-        .manage(OAuthState::new())
         .setup(move |app| {
             // Register default shortcut: Alt+Shift+Space
             app.global_shortcut().register(default_shortcut)?;
@@ -1172,13 +1167,6 @@ pub fn run() {
             // IPC (Chrome Extension 연동)
             notify_focus_state,
             poll_extension_command,
-            // Google OAuth
-            google_auth::get_google_auth_url,
-            google_auth::exchange_google_code,
-            google_auth::get_google_connection_status,
-            google_auth::get_google_access_token,
-            google_auth::disconnect_google,
-            google_auth::revoke_google_token,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
