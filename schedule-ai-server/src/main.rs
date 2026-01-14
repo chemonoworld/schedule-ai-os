@@ -64,12 +64,14 @@ async fn main() {
 
     // Auth routes
     let auth_routes = routes::auth_routes(state.clone());
+    let calendar_auth_routes = routes::calendar_auth_routes(state.clone());
 
     // Build router
     let app = Router::new()
         .route("/", get(root))
         .route("/health", get(routes::health_check))
         .nest("/api/auth", auth_routes)
+        .nest("/api/auth", calendar_auth_routes)
         .layer(cors)
         .with_state(state);
 

@@ -31,6 +31,11 @@ thiserror = "1"
 reqwest = { version = "0.12", features = ["json"] }
 async-trait = "0.1"
 lazy_static = "1.4"
+keyring = "3"
+rand = "0.8"
+sha2 = "0.10"
+base64 = "0.22"
+url = "2"
 
 [target.'cfg(target_os = "macos")'.dependencies]
 objc2 = "0.5"
