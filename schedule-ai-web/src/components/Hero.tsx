@@ -39,7 +39,7 @@ export function Hero() {
           </Link>
           {/* GitHub 버튼 - 오픈소스 공개 시 활성화
           <a
-            href="https://github.com/chemonoworld/schedule-ai"
+            href="https://github.com/chemonoworld/schedule-ai-os"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex items-center justify-center gap-2 border border-zinc-300 dark:border-zinc-700 text-zinc-700 dark:text-zinc-300 px-8 py-4 rounded-full text-lg font-medium hover:bg-zinc-100 dark:hover:bg-zinc-800 transition-colors"

@@ -34,7 +34,7 @@ export interface ReleaseInfo {
   };
 }
 
-const GITHUB_REPO = "chemonoworld/schedule-ai";
+const GITHUB_REPO = "chemonoworld/schedule-ai-os";
 
 export async function getLatestRelease(): Promise<ReleaseInfo | null> {
   try {
