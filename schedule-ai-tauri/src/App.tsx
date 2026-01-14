@@ -8,8 +8,14 @@ import { usePlanStore } from './stores/planStore';
 import { useFocusStore } from './stores/focusStore';
 import { useSettingsStore, type Language } from './stores/settingsStore';
 import { formatDate, addDays } from '@schedule-ai/core';
-import { getDailyProgressByYear, getRecentDailyProgress } from './db';
-import type { DailyProgress as DBDailyProgress } from './db';
+import {
+  getDailyProgressByYear,
+  getRecentDailyProgress,
+  getBlockStatsByApp,
+  getBlockStatsByDate,
+  getTotalBlockCount,
+} from './db';
+import type { DailyProgress as DBDailyProgress, BlockStat, DailyBlockStat } from './db';
 import type { Task, SubTask, Plan, RecurringPlan, ParsedRecurrencePattern, RecurrenceType } from '@schedule-ai/core';
 import {
   createRecurringPlan,
@@ -386,6 +392,239 @@ function SwipeableTask({
   );
 }
 
+// Focus Stats Modal Component
+function FocusStatsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+  const { t } = useTranslation('focus');
+  const [appStats, setAppStats] = useState<BlockStat[]>([]);
+  const [dailyStats, setDailyStats] = useState<DailyBlockStat[]>([]);
+  const [totalCount, setTotalCount] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [aiInsight, setAiInsight] = useState<{
+    insight: string;
+    advice: string[];
+    encouragement: string;
+  } | null>(null);
+  const [isGeneratingInsight, setIsGeneratingInsight] = useState(false);
+
+  // 데이터 로드
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const loadStats = async () => {
+      setIsLoading(true);
+      try {
+        const [apps, daily, total] = await Promise.all([
+          getBlockStatsByApp(),
+          getBlockStatsByDate(7),
+          getTotalBlockCount(),
+        ]);
+        setAppStats(apps);
+        setDailyStats(daily);
+        setTotalCount(total);
+      } catch (error) {
+        console.error('Failed to load block stats:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadStats();
+    // 모달 열 때마다 AI 인사이트 초기화
+    setAiInsight(null);
+  }, [isOpen]);
+
+  // AI 인사이트 생성 (OpenAI Structured Output)
+  const generateAiInsight = async () => {
+    if (appStats.length === 0) return;
+
+    setIsGeneratingInsight(true);
+    setAiInsight(null);
+
+    try {
+      // 통계 데이터를 요약 텍스트로 변환
+      const statsText = appStats.map(s => `${s.appName}: ${s.count}회`).join('\n');
+      const dailyText = dailyStats.map(d => `${d.date}: ${d.count}회`).join('\n');
+
+      const statsSummary = `앱별 차단 횟수:
+${statsText}
+
+최근 7일간 일별 차단:
+${dailyText}
+
+총 차단 횟수: ${totalCount}회`;
+
+      // Structured Output 커맨드 호출
+      const response = await invoke<{
+        insight: string;
+        advice: string[];
+        encouragement: string;
+      }>('stream_focus_insight', { statsSummary });
+
+      setAiInsight(response);
+    } catch (error) {
+      console.error('Failed to generate AI insight:', error);
+      const errorMsg = error instanceof Error ? error.message : String(error);
+      // 에러 시 기본 구조로 표시
+      setAiInsight({
+        insight: t('stats.aiError'),
+        advice: [],
+        encouragement: `Error: ${errorMsg}`,
+      });
+    } finally {
+      setIsGeneratingInsight(false);
+    }
+  };
+
+  // 막대 그래프 최대값 계산
+  const maxAppCount = Math.max(...appStats.map(s => s.count), 1);
+  const maxDailyCount = Math.max(...dailyStats.map(s => s.count), 1);
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="focus-stats-modal-overlay" onClick={onClose}>
+      <div className="focus-stats-modal" onClick={e => e.stopPropagation()}>
+        <div className="focus-stats-modal-header">
+          <h2>{t('stats.title')}</h2>
+          <button className="focus-stats-modal-close" onClick={onClose}>✕</button>
+        </div>
+
+        {isLoading ? (
+          <div className="focus-stats-loading">{t('stats.loading')}</div>
+        ) : totalCount === 0 ? (
+          <div className="focus-stats-empty">
+            <p>{t('stats.noData')}</p>
+            <p className="focus-stats-empty-hint">{t('stats.noDataHint')}</p>
+          </div>
+        ) : (
+          <div className="focus-stats-content">
+            {/* 총 차단 횟수 */}
+            <div className="focus-stats-total">
+              <span className="focus-stats-total-count">{totalCount}</span>
+              <span className="focus-stats-total-label">{t('stats.totalBlocks')}</span>
+            </div>
+
+            {/* 앱별 차단 횟수 */}
+            <div className="focus-stats-section">
+              <h3>{t('stats.byApp')}</h3>
+              <div className="focus-stats-app-list">
+                {appStats.slice(0, 5).map((stat) => (
+                  <div key={stat.bundleId} className="focus-stats-app-item">
+                    <span className="focus-stats-app-name">{stat.appName}</span>
+                    <div className="focus-stats-app-bar-container">
+                      <div
+                        className="focus-stats-app-bar"
+                        style={{ width: `${(stat.count / maxAppCount) * 100}%` }}
+                      />
+                    </div>
+                    <span className="focus-stats-app-count">{stat.count}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 일별 추이 */}
+            <div className="focus-stats-section">
+              <h3>{t('stats.dailyTrend')}</h3>
+              <div className="focus-stats-daily-chart">
+                {dailyStats.map((stat) => (
+                  <div key={stat.date} className="focus-stats-daily-bar-wrapper">
+                    <div
+                      className="focus-stats-daily-bar"
+                      style={{ height: `${(stat.count / maxDailyCount) * 100}%` }}
+                    />
+                    <span className="focus-stats-daily-label">
+                      {stat.date.slice(5)} {/* MM-DD */}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* AI 인사이트 */}
+            <div className="focus-stats-ai-section">
+              {!aiInsight ? (
+                <button
+                  className="focus-stats-ai-btn"
+                  onClick={generateAiInsight}
+                  disabled={isGeneratingInsight}
+                >
+                  {isGeneratingInsight ? (
+                    <>
+                      <span className="focus-stats-ai-btn-spinner" />
+                      {t('stats.aiGenerating')}
+                    </>
+                  ) : (
+                    <>
+                      <span className="focus-stats-ai-btn-icon">✨</span>
+                      {t('stats.aiButton')}
+                    </>
+                  )}
+                </button>
+              ) : (
+                <div className="focus-stats-ai-result">
+                  <div className="focus-stats-ai-header">
+                    <span className="focus-stats-ai-header-icon">🤖</span>
+                    <span>{t('stats.aiInsight')}</span>
+                  </div>
+                  <div className="focus-stats-ai-cards">
+                    {/* 분석 카드 */}
+                    <div className="focus-stats-ai-card focus-stats-ai-card--insight">
+                      <div className="focus-stats-ai-card-header">
+                        <span className="focus-stats-ai-card-icon">💡</span>
+                        <span className="focus-stats-ai-card-title">분석</span>
+                      </div>
+                      <p className="focus-stats-ai-card-content">{aiInsight.insight}</p>
+                    </div>
+
+                    {/* 조언 카드 */}
+                    {aiInsight.advice.length > 0 && (
+                      <div className="focus-stats-ai-card focus-stats-ai-card--advice">
+                        <div className="focus-stats-ai-card-header">
+                          <span className="focus-stats-ai-card-icon">✅</span>
+                          <span className="focus-stats-ai-card-title">실천 조언</span>
+                        </div>
+                        <ul className="focus-stats-ai-card-list">
+                          {aiInsight.advice.map((item, idx) => (
+                            <li key={idx}>
+                              <span className="focus-stats-ai-card-list-marker">{idx + 1}.</span>
+                              <span>{item}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+
+                    {/* 격려 카드 */}
+                    <div className="focus-stats-ai-card focus-stats-ai-card--encouragement">
+                      <div className="focus-stats-ai-card-header">
+                        <span className="focus-stats-ai-card-icon">💪</span>
+                        <span className="focus-stats-ai-card-title">응원 메시지</span>
+                      </div>
+                      <p className="focus-stats-ai-card-content focus-stats-ai-card-content--highlight">
+                        {aiInsight.encouragement}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* 다시 분석 버튼 */}
+                  <button
+                    className="focus-stats-ai-refresh-btn"
+                    onClick={generateAiInsight}
+                    disabled={isGeneratingInsight}
+                  >
+                    {isGeneratingInsight ? t('stats.aiGenerating') : '🔄 다시 분석하기'}
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // Focus View Component
 function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
   const { t } = useTranslation('focus');
@@ -431,6 +670,7 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
   const [showTimerSettings, setShowTimerSettings] = useState(false);
   const [showAppSelector, setShowAppSelector] = useState(false);
   const [tempSettings, setTempSettings] = useState(pomodoroSettings);
+  const [showStatsModal, setShowStatsModal] = useState(false);
 
   // 앱 목록 및 블랙리스트 로드
   useEffect(() => {
@@ -546,17 +786,26 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
           <div className="focus-timer-section-setup">
             <div className="focus-timer-header">
               <h3>{t('timerType.title')}</h3>
-              {focusTimerType === 'pomodoro' && (
+              <div className="focus-timer-header-actions">
                 <button
-                  className="focus-pomodoro-settings-btn"
-                  onClick={() => {
-                    setTempSettings(pomodoroSettings);
-                    setShowTimerSettings(!showTimerSettings);
-                  }}
+                  className="focus-stats-btn"
+                  onClick={() => setShowStatsModal(true)}
+                  title={t('stats.title')}
                 >
-                  ⚙
+                  📊
                 </button>
-              )}
+                {focusTimerType === 'pomodoro' && (
+                  <button
+                    className="focus-pomodoro-settings-btn"
+                    onClick={() => {
+                      setTempSettings(pomodoroSettings);
+                      setShowTimerSettings(!showTimerSettings);
+                    }}
+                  >
+                    ⚙
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* 타이머 모드 탭 */}
@@ -905,6 +1154,12 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
           </button>
         </div>
       )}
+
+      {/* 통계 모달 */}
+      <FocusStatsModal
+        isOpen={showStatsModal}
+        onClose={() => setShowStatsModal(false)}
+      />
     </div>
   );
 }

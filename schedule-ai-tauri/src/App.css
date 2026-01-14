@@ -3327,3 +3327,443 @@ body {
 .focus-pomodoro-save-btn:hover {
   background: var(--color-primary-dark);
 }
+
+
+/* Focus Stats Modal */
+.focus-stats-btn {
+  padding: 0.375rem 0.5rem;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.375rem;
+  transition: background 0.15s ease;
+}
+
+.focus-stats-btn:hover {
+  background: var(--color-bg-secondary);
+}
+
+.focus-timer-header-actions {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.focus-stats-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.focus-stats-modal {
+  background: var(--color-card);
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 420px;
+  max-height: 80vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.focus-stats-modal::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
+}
+
+.focus-stats-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  background: var(--color-card);
+}
+
+.focus-stats-modal-header h2 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+}
+
+.focus-stats-modal-close {
+  padding: 0.25rem 0.5rem;
+  font-size: 1rem;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  border-radius: 0.375rem;
+}
+
+.focus-stats-modal-close:hover {
+  background: var(--color-bg-secondary);
+}
+
+.focus-stats-loading,
+.focus-stats-empty {
+  padding: 3rem 1.25rem;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.focus-stats-empty-hint {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  opacity: 0.7;
+}
+
+.focus-stats-content {
+  padding: 1.25rem;
+}
+
+.focus-stats-total {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(135deg, var(--color-primary), var(--color-primary-dark));
+  border-radius: 0.75rem;
+  margin-bottom: 1.5rem;
+  color: white;
+}
+
+.focus-stats-total-count {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.focus-stats-total-label {
+  font-size: 0.875rem;
+  opacity: 0.9;
+  margin-top: 0.25rem;
+}
+
+.focus-stats-section {
+  margin-bottom: 1.5rem;
+}
+
+.focus-stats-section h3 {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  margin: 0 0 0.75rem 0;
+}
+
+.focus-stats-app-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.focus-stats-app-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.focus-stats-app-name {
+  flex: 0 0 100px;
+  font-size: 0.875rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.focus-stats-app-bar-container {
+  flex: 1;
+  height: 8px;
+  background: var(--color-bg-secondary);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.focus-stats-app-bar {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.focus-stats-app-count {
+  flex: 0 0 40px;
+  text-align: right;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+.focus-stats-daily-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100px;
+  padding: 0.5rem 0;
+  gap: 0.25rem;
+}
+
+.focus-stats-daily-bar-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.focus-stats-daily-bar {
+  width: 100%;
+  max-width: 24px;
+  background: var(--color-primary);
+  border-radius: 3px 3px 0 0;
+  min-height: 4px;
+  transition: height 0.3s ease;
+  margin-top: auto;
+}
+
+.focus-stats-daily-label {
+  font-size: 0.625rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.375rem;
+}
+
+.focus-stats-ai-section {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--color-border);
+}
+
+/* AI 인사이트 버튼 */
+.focus-stats-ai-btn {
+  width: 100%;
+  padding: 1rem 1.25rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  background: linear-gradient(135deg, #8b5cf6, #6366f1);
+  color: white;
+  border: none;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.focus-stats-ai-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(99, 102, 241, 0.35);
+}
+
+.focus-stats-ai-btn:disabled {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.focus-stats-ai-btn-icon {
+  font-size: 1.1rem;
+}
+
+.focus-stats-ai-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* AI 인사이트 결과 컨테이너 */
+.focus-stats-ai-result {
+  animation: fadeInUp 0.3s ease;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.focus-stats-ai-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #8b5cf6;
+  margin-bottom: 1rem;
+}
+
+.focus-stats-ai-header-icon {
+  font-size: 1.25rem;
+}
+
+/* 카드 그리드 */
+.focus-stats-ai-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* 개별 카드 스타일 */
+.focus-stats-ai-card {
+  border-radius: 0.75rem;
+  padding: 1rem;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.focus-stats-ai-card:hover {
+  transform: translateY(-1px);
+}
+
+.focus-stats-ai-card-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.625rem;
+}
+
+.focus-stats-ai-card-icon {
+  font-size: 0.85rem;
+}
+
+.focus-stats-ai-card-title {
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.focus-stats-ai-card-content {
+  font-size: 0.875rem;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* 분석 카드 - 파란색 계열 */
+.focus-stats-ai-card--insight {
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1));
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.focus-stats-ai-card--insight .focus-stats-ai-card-title {
+  color: #3b82f6;
+}
+
+.focus-stats-ai-card--insight .focus-stats-ai-card-content {
+  color: var(--color-text);
+}
+
+/* 조언 카드 - 초록색 계열 */
+.focus-stats-ai-card--advice {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(16, 185, 129, 0.1));
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.focus-stats-ai-card--advice .focus-stats-ai-card-title {
+  color: #22c55e;
+}
+
+.focus-stats-ai-card-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+}
+
+.focus-stats-ai-card-list li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  font-size: 0.875rem;
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+.focus-stats-ai-card-list-marker {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #22c55e;
+  border-radius: 50%;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+/* 격려 카드 - 보라색 계열 */
+.focus-stats-ai-card--encouragement {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.1), rgba(139, 92, 246, 0.15));
+  border: 1px solid rgba(168, 85, 247, 0.25);
+}
+
+.focus-stats-ai-card--encouragement .focus-stats-ai-card-title {
+  color: #a855f7;
+}
+
+.focus-stats-ai-card-content--highlight {
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-text);
+  position: relative;
+  padding-left: 1rem;
+}
+
+.focus-stats-ai-card-content--highlight::before {
+  content: '"';
+  position: absolute;
+  left: 0;
+  top: -0.125rem;
+  font-size: 1.5rem;
+  color: #a855f7;
+  opacity: 0.5;
+}
+
+/* 다시 분석 버튼 */
+.focus-stats-ai-refresh-btn {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.625rem 1rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: transparent;
+  color: var(--color-text-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.focus-stats-ai-refresh-btn:hover:not(:disabled) {
+  background: var(--color-bg-secondary);
+  color: var(--color-text);
+  border-color: var(--color-text-secondary);
+}
+
+.focus-stats-ai-refresh-btn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
