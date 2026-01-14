@@ -8,6 +8,7 @@ import { usePlanStore } from './stores/planStore';
 import { useFocusStore } from './stores/focusStore';
 import { useSettingsStore, type Language } from './stores/settingsStore';
 import { useCalendarStore, type CalendarEvent } from './stores/calendarStore';
+import { useDeepLink } from './hooks/useDeepLink';
 import { toTimelineItems, isCalendarEvent } from './types/timeline';
 import { formatDate, addDays } from '@schedule-ai/core';
 import { getDailyProgressByYear, getRecentDailyProgress } from './db';
@@ -1058,6 +1059,10 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
 
 function App() {
   const { t } = useTranslation();
+
+  // Deep Link 리스너 설정 (OAuth 콜백 처리)
+  useDeepLink();
+
   const { language, setLanguage } = useSettingsStore();
   const [activeTab, setActiveTab] = useState<Tab>('today');
   const { tasks, selectedDate, isLoading, loadTasks, setSelectedDate, updateTaskStatus, updateTask, deleteTask, createTask, createSubTask, updateSubTaskStatus, updateSubTask, deleteSubTask } = useTaskStore();
