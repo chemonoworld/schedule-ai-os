@@ -36,7 +36,10 @@
     "aiInputLabel": "모드 전환:",
     "focusInputTitle": "입력창 포커스 단축키",
     "focusInputDesc": "Today 탭에서 태스크 입력창에 포커스하는 단축키입니다.",
-    "focusInputLabel": "입력창 포커스:"
+    "focusInputLabel": "입력창 포커스:",
+    "focusStartTitle": "집중 모드 단축키",
+    "focusStartDesc": "Focus 탭에서 집중 모드를 시작/종료하는 단축키입니다.",
+    "focusStartLabel": "집중 모드 토글:"
   },
   "planRules": {
     "title": "Plan 규칙",
