@@ -64,6 +64,112 @@ impl ClaudeProvider {
         self.model = model;
         self
     }
+
+    /// Tool use 기반 structured output completion
+    pub async fn complete_structured(
+        &self,
+        messages: Vec<LLMMessage>,
+        schema: serde_json::Value,
+        tool_name: &str,
+    ) -> Result<String, LLMError> {
+        #[derive(Serialize)]
+        struct AnthropicRequest {
+            model: String,
+            max_tokens: u32,
+            messages: Vec<AnthropicMessage>,
+            tools: Vec<Tool>,
+            tool_choice: ToolChoice,
+        }
+
+        #[derive(Serialize)]
+        struct AnthropicMessage {
+            role: String,
+            content: String,
+        }
+
+        #[derive(Serialize)]
+        struct Tool {
+            name: String,
+            description: String,
+            input_schema: serde_json::Value,
+        }
+
+        #[derive(Serialize)]
+        struct ToolChoice {
+            #[serde(rename = "type")]
+            choice_type: String,
+            name: String,
+        }
+
+        let anthropic_messages: Vec<AnthropicMessage> = messages
+            .into_iter()
+            .map(|m| AnthropicMessage {
+                role: m.role,
+                content: m.content,
+            })
+            .collect();
+
+        let tool = Tool {
+            name: tool_name.to_string(),
+            description: format!("Generate structured {} response", tool_name),
+            input_schema: schema,
+        };
+
+        let anthropic_request = AnthropicRequest {
+            model: self.model.clone(),
+            max_tokens: 1024,
+            messages: anthropic_messages,
+            tools: vec![tool],
+            tool_choice: ToolChoice {
+                choice_type: "tool".to_string(),
+                name: tool_name.to_string(),
+            },
+        };
+
+        let response = self
+            .client
+            .post("https://api.anthropic.com/v1/messages")
+            .header("x-api-key", &self.api_key)
+            .header("anthropic-version", "2023-06-01")
+            .header("content-type", "application/json")
+            .json(&anthropic_request)
+            .send()
+            .await?;
+
+        if !response.status().is_success() {
+            let error_text = response.text().await.unwrap_or_default();
+            return Err(LLMError::ApiError(error_text));
+        }
+
+        // Parse response with tool_use content block
+        #[derive(Deserialize)]
+        struct AnthropicResponse {
+            content: Vec<ContentBlock>,
+        }
+
+        #[derive(Deserialize)]
+        #[serde(tag = "type")]
+        enum ContentBlock {
+            #[serde(rename = "tool_use")]
+            ToolUse { input: serde_json::Value },
+            #[serde(rename = "text")]
+            Text { text: String },
+        }
+
+        let anthropic_response: AnthropicResponse = response
+            .json()
+            .await
+            .map_err(|e| LLMError::ParseError(e.to_string()))?;
+
+        // Extract tool_use input
+        for block in anthropic_response.content {
+            if let ContentBlock::ToolUse { input } = block {
+                return Ok(input.to_string());
+            }
+        }
+
+        Err(LLMError::ParseError("No tool_use block in response".to_string()))
+    }
 }
 
 #[async_trait]
@@ -169,121 +275,3 @@ impl LLMService {
     }
 }
 
-// OpenAI Provider for Structured Output
-pub struct OpenAIProvider {
-    client: reqwest::Client,
-    api_key: String,
-    model: String,
-}
-
-impl OpenAIProvider {
-    pub fn new(api_key: String) -> Self {
-        Self {
-            client: reqwest::Client::new(),
-            api_key,
-            model: "gpt-4o-mini".to_string(),
-        }
-    }
-
-    /// Structured output completion with JSON schema
-    pub async fn complete_structured(
-        &self,
-        messages: Vec<LLMMessage>,
-        schema: serde_json::Value,
-        schema_name: &str,
-    ) -> Result<String, LLMError> {
-        #[derive(Serialize)]
-        struct OpenAIRequest {
-            model: String,
-            messages: Vec<OpenAIMessage>,
-            max_tokens: u32,
-            response_format: ResponseFormat,
-        }
-
-        #[derive(Serialize)]
-        struct OpenAIMessage {
-            role: String,
-            content: String,
-        }
-
-        #[derive(Serialize)]
-        struct ResponseFormat {
-            #[serde(rename = "type")]
-            format_type: String,
-            json_schema: JsonSchemaWrapper,
-        }
-
-        #[derive(Serialize)]
-        struct JsonSchemaWrapper {
-            name: String,
-            strict: bool,
-            schema: serde_json::Value,
-        }
-
-        let openai_messages: Vec<OpenAIMessage> = messages
-            .into_iter()
-            .map(|m| OpenAIMessage {
-                role: m.role,
-                content: m.content,
-            })
-            .collect();
-
-        let request = OpenAIRequest {
-            model: self.model.clone(),
-            messages: openai_messages,
-            max_tokens: 500,
-            response_format: ResponseFormat {
-                format_type: "json_schema".to_string(),
-                json_schema: JsonSchemaWrapper {
-                    name: schema_name.to_string(),
-                    strict: true,
-                    schema,
-                },
-            },
-        };
-
-        let response = self
-            .client
-            .post("https://api.openai.com/v1/chat/completions")
-            .header("Authorization", format!("Bearer {}", self.api_key))
-            .header("Content-Type", "application/json")
-            .json(&request)
-            .send()
-            .await?;
-
-        if !response.status().is_success() {
-            let error_text = response.text().await.unwrap_or_default();
-            return Err(LLMError::ApiError(error_text));
-        }
-
-        // Parse JSON response
-        #[derive(Deserialize)]
-        struct OpenAIResponse {
-            choices: Vec<Choice>,
-        }
-
-        #[derive(Deserialize)]
-        struct Choice {
-            message: Message,
-        }
-
-        #[derive(Deserialize)]
-        struct Message {
-            content: String,
-        }
-
-        let api_response: OpenAIResponse = response
-            .json()
-            .await
-            .map_err(|e| LLMError::ParseError(e.to_string()))?;
-
-        let content = api_response
-            .choices
-            .into_iter()
-            .next()
-            .map(|c| c.message.content)
-            .ok_or_else(|| LLMError::ParseError("No choices in response".to_string()))?;
-
-        Ok(content)
-    }
-}

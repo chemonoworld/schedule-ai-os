@@ -20,7 +20,7 @@ use tauri_plugin_global_shortcut::{Code, GlobalShortcutExt, Modifiers, Shortcut,
 use tauri_plugin_sql::{Migration, MigrationKind};
 use tauri_plugin_store::StoreExt;
 
-use llm::{ClaudeProvider, LLMProvider, LLMRequest, LLMMessage, OpenAIProvider};
+use llm::{ClaudeProvider, LLMProvider, LLMRequest, LLMMessage};
 
 fn get_migrations() -> Vec<Migration> {
     vec![
@@ -1017,16 +1017,17 @@ pub struct FocusInsightResponse {
     pub encouragement: String,
 }
 
-/// OpenAI Structured Output을 사용한 Focus Mode AI 인사이트 생성
+/// Claude Tool Use 기반 Focus Mode AI 인사이트 생성
 #[tauri::command]
 async fn stream_focus_insight(
+    state: State<'_, ApiKeyState>,
     stats_summary: String,
 ) -> Result<FocusInsightResponse, String> {
-    // 환경변수에서 OpenAI API 키 읽기
-    let api_key = std::env::var("OPENAI_API_KEY")
-        .map_err(|_| "OPENAI_API_KEY environment variable not set")?;
+    // 사용자가 입력한 Claude API 키 사용
+    let api_key = state.0.lock().unwrap().clone()
+        .ok_or("API key not set. Please set your Claude API key in Settings.")?;
 
-    let provider = OpenAIProvider::new(api_key);
+    let provider = ClaudeProvider::new(api_key);
 
     let system_prompt = r#"# Role
 당신은 ADHD 사용자를 위한 '행동 심리학 기반 집중력 코치'입니다.
@@ -1042,16 +1043,12 @@ async fn stream_focus_insight(
 
     let messages = vec![
         LLMMessage {
-            role: "system".to_string(),
-            content: system_prompt.to_string(),
-        },
-        LLMMessage {
             role: "user".to_string(),
-            content: format!("다음은 제 집중 모드 앱 차단 통계입니다:\n{}", stats_summary),
+            content: format!("{}\n\n다음은 제 집중 모드 앱 차단 통계입니다:\n{}", system_prompt, stats_summary),
         },
     ];
 
-    // JSON Schema 정의
+    // JSON Schema 정의 (Claude tool use 형식)
     let schema = serde_json::json!({
         "type": "object",
         "properties": {
@@ -1063,8 +1060,7 @@ async fn stream_focus_insight(
             },
             "encouragement": { "type": "string", "description": "격려의 말" }
         },
-        "required": ["insight", "advice", "encouragement"],
-        "additionalProperties": false
+        "required": ["insight", "advice", "encouragement"]
     });
 
     let content = provider
@@ -1132,12 +1128,6 @@ fn format_shortcut(shortcut: &Shortcut) -> String {
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
-    // .env 파일 로드 (프로젝트 루트와 src-tauri 모두 시도)
-    if dotenvy::dotenv().is_err() {
-        // src-tauri에서 실행 시 상위 디렉토리의 .env 시도
-        let _ = dotenvy::from_filename("../.env");
-    }
-
     // Default shortcut: Alt+Shift+Space
     let default_shortcut = Shortcut::new(Some(Modifiers::ALT | Modifiers::SHIFT), Code::Space);
 
@@ -1248,7 +1238,7 @@ pub fn run() {
             // IPC (Chrome Extension 연동)
             notify_focus_state,
             poll_extension_command,
-            // OpenAI 스트리밍
+            // Focus Mode AI 인사이트
             stream_focus_insight,
         ])
         .run(tauri::generate_context!())

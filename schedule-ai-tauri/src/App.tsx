@@ -393,7 +393,7 @@ function SwipeableTask({
 }
 
 // Focus Stats Modal Component
-function FocusStatsModal({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+function FocusStatsModal({ isOpen, onClose, hasApiKey }: { isOpen: boolean; onClose: () => void; hasApiKey: boolean }) {
   const { t } = useTranslation('focus');
   const [appStats, setAppStats] = useState<BlockStat[]>([]);
   const [dailyStats, setDailyStats] = useState<DailyBlockStat[]>([]);
@@ -542,6 +542,7 @@ ${dailyText}
             </div>
 
             {/* AI 인사이트 */}
+            {hasApiKey && (
             <div className="focus-stats-ai-section">
               {!aiInsight ? (
                 <button
@@ -618,6 +619,7 @@ ${dailyText}
                 </div>
               )}
             </div>
+            )}
           </div>
         )}
       </div>
@@ -626,7 +628,7 @@ ${dailyText}
 }
 
 // Focus View Component
-function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
+function FocusView({ onNavigateToToday, apiKey }: { onNavigateToToday: () => void; apiKey: string }) {
   const { t } = useTranslation('focus');
   const {
     isActive,
@@ -1159,6 +1161,7 @@ function FocusView({ onNavigateToToday }: { onNavigateToToday: () => void }) {
       <FocusStatsModal
         isOpen={showStatsModal}
         onClose={() => setShowStatsModal(false)}
+        hasApiKey={Boolean(apiKey)}
       />
     </div>
   );
@@ -2999,10 +3002,13 @@ function App() {
         )}
 
         {activeTab === 'focus' && (
-          <FocusView onNavigateToToday={() => {
-            setSelectedDate(formatDate(new Date()));
-            setActiveTab('today');
-          }} />
+          <FocusView
+            onNavigateToToday={() => {
+              setSelectedDate(formatDate(new Date()));
+              setActiveTab('today');
+            }}
+            apiKey={apiKey}
+          />
         )}
 
         {activeTab === 'settings' && (
