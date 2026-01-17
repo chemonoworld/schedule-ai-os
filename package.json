@@ -5,7 +5,8 @@
   "description": "ADHD-friendly schedule management app",
   "scripts": {
     "dev": "turbo run dev",
-    "dev:desktop": "pnpm --filter @schedule-ai/desktop tauri dev",
+    "dev:desktop": "pnpm build:packages && pnpm --filter @schedule-ai/desktop tauri dev",
+    "build:packages": "pnpm --filter @schedule-ai/core build && pnpm --filter @schedule-ai/llm-client build && pnpm --filter @schedule-ai/ui build",
     "dev:web": "pnpm --filter schedule-ai-web dev",
     "build": "turbo run build",
     "build:web": "pnpm --filter schedule-ai-web build",
