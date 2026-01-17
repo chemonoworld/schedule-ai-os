@@ -48,6 +48,12 @@ fn get_migrations() -> Vec<Migration> {
             sql: include_str!("db/migrations/004_task_location.sql"),
             kind: MigrationKind::Up,
         },
+        Migration {
+            version: 5,
+            description: "add focus block stats table",
+            sql: include_str!("db/migrations/005_focus_block_stats.sql"),
+            kind: MigrationKind::Up,
+        },
     ]
 }
 
@@ -1003,6 +1009,72 @@ async fn poll_extension_command(
     Ok(state.0.take_pending_command().await)
 }
 
+/// Focus Mode AI 인사이트 응답 구조
+#[derive(Debug, Clone, serde::Serialize, serde::Deserialize)]
+pub struct FocusInsightResponse {
+    pub insight: String,
+    pub advice: Vec<String>,
+    pub encouragement: String,
+}
+
+/// Claude Tool Use 기반 Focus Mode AI 인사이트 생성
+#[tauri::command]
+async fn stream_focus_insight(
+    state: State<'_, ApiKeyState>,
+    stats_summary: String,
+) -> Result<FocusInsightResponse, String> {
+    // 사용자가 입력한 Claude API 키 사용
+    let api_key = state.0.lock().unwrap().clone()
+        .ok_or("API key not set. Please set your Claude API key in Settings.")?;
+
+    let provider = ClaudeProvider::new(api_key);
+
+    let system_prompt = r#"# Role
+당신은 ADHD 사용자를 위한 '행동 심리학 기반 집중력 코치'입니다.
+
+# Task
+제공된 앱 차단 데이터를 분석하여 다음 필드를 채우세요:
+1. insight: 가장 많이 차단된 앱이 주는 심리적 보상 분석
+2. advice: 인지 부하를 줄이는 구체적 행동 지침 (배열 형태, 2가지)
+3. encouragement: 죄책감을 덜어주는 따뜻한 격려
+
+# Context
+사용자는 차단된 앱을 자주 열어보려 했습니다. 비판보다는 공감과 해결책에 집중하세요."#;
+
+    let messages = vec![
+        LLMMessage {
+            role: "user".to_string(),
+            content: format!("{}\n\n다음은 제 집중 모드 앱 차단 통계입니다:\n{}", system_prompt, stats_summary),
+        },
+    ];
+
+    // JSON Schema 정의 (Claude tool use 형식)
+    let schema = serde_json::json!({
+        "type": "object",
+        "properties": {
+            "insight": { "type": "string", "description": "앱 차단 원인 분석" },
+            "advice": {
+                "type": "array",
+                "items": { "type": "string" },
+                "description": "구체적인 조언 2가지"
+            },
+            "encouragement": { "type": "string", "description": "격려의 말" }
+        },
+        "required": ["insight", "advice", "encouragement"]
+    });
+
+    let content = provider
+        .complete_structured(messages, schema, "focus_insight")
+        .await
+        .map_err(|e| e.to_string())?;
+
+    // JSON 파싱
+    let response: FocusInsightResponse = serde_json::from_str(&content)
+        .map_err(|e| format!("Failed to parse response: {}", e))?;
+
+    Ok(response)
+}
+
 fn format_shortcut(shortcut: &Shortcut) -> String {
     let mut parts = Vec::new();
     let mods = shortcut.mods;
@@ -1166,6 +1238,8 @@ pub fn run() {
             // IPC (Chrome Extension 연동)
             notify_focus_state,
             poll_extension_command,
+            // Focus Mode AI 인사이트
+            stream_focus_insight,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");

@@ -64,5 +64,18 @@
       "backToWork": "Time to get back to work."
     },
     "duration": "Duration (min)"
+  },
+  "stats": {
+    "title": "Block Statistics",
+    "loading": "Loading...",
+    "noData": "No block records yet",
+    "noDataHint": "When apps are blocked in focus mode, they will appear here",
+    "totalBlocks": "Total Blocks",
+    "byApp": "Blocks by App",
+    "dailyTrend": "Daily Trend (Last 7 Days)",
+    "aiButton": "Get AI Insight",
+    "aiGenerating": "Analyzing...",
+    "aiInsight": "AI Insight",
+    "aiError": "Failed to load AI analysis. Please check your API key."
   }
 }

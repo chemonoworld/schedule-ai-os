@@ -64,5 +64,18 @@
       "backToWork": "다시 집중할 시간입니다."
     },
     "duration": "시간 (분)"
+  },
+  "stats": {
+    "title": "차단 통계",
+    "loading": "로딩 중...",
+    "noData": "아직 차단 기록이 없습니다",
+    "noDataHint": "집중 모드에서 앱이 차단되면 여기에 표시됩니다",
+    "totalBlocks": "총 차단 횟수",
+    "byApp": "앱별 차단 횟수",
+    "dailyTrend": "일별 추이 (최근 7일)",
+    "aiButton": "AI 인사이트 받기",
+    "aiGenerating": "분석 중...",
+    "aiInsight": "AI 인사이트",
+    "aiError": "AI 분석을 불러오는데 실패했습니다. API 키를 확인해주세요."
   }
 }
