@@ -1232,6 +1232,11 @@ function App() {
   const [recordedFocusShortcutKey, setRecordedFocusShortcutKey] = useState('');
   const taskInputRef = useRef<HTMLInputElement>(null);
 
+  // Focus start shortcut state (for starting/stopping focus mode)
+  const [focusStartShortcut, setFocusStartShortcut] = useState(isMac ? 'cmd+enter' : 'ctrl+enter');
+  const [recordingFocusStartShortcut, setRecordingFocusStartShortcut] = useState(false);
+  const [recordedFocusStartShortcutKey, setRecordedFocusStartShortcutKey] = useState('');
+
   // API Key state
   const [apiKey, setApiKey] = useState('');
   const [apiKeyInput, setApiKeyInput] = useState('');
@@ -1313,6 +1318,12 @@ function App() {
     invoke<string>('get_focus_input_shortcut').then((shortcut) => {
       if (shortcut) {
         setFocusInputShortcut(shortcut);
+      }
+    }).catch(console.error);
+    // Load focus start shortcut
+    invoke<string>('get_focus_start_shortcut').then((shortcut) => {
+      if (shortcut) {
+        setFocusStartShortcut(shortcut);
       }
     }).catch(console.error);
 
@@ -1629,6 +1640,99 @@ function App() {
       window.removeEventListener('keyup', handleKeyUp);
     };
   }, [recordingFocusShortcut, recordedFocusShortcutKey]);
+
+  // Focus start/stop shortcut handler
+  useEffect(() => {
+    const checkFocusStartShortcut = (e: KeyboardEvent, shortcut: string) => {
+      const parts = shortcut.toLowerCase().split('+');
+      const key = parts[parts.length - 1];
+      const needShift = parts.includes('shift');
+      const needCtrl = parts.includes('ctrl');
+      const needAlt = parts.includes('alt');
+      const needCmd = parts.includes('cmd') || parts.includes('meta');
+
+      const pressedKey = e.key.toLowerCase();
+      const hasShift = e.shiftKey;
+      const hasCtrl = e.ctrlKey;
+      const hasAlt = e.altKey;
+      const hasCmd = e.metaKey;
+
+      return (
+        pressedKey === key &&
+        hasShift === needShift &&
+        hasCtrl === needCtrl &&
+        hasAlt === needAlt &&
+        hasCmd === needCmd
+      );
+    };
+
+    const handleFocusStartShortcut = (e: KeyboardEvent) => {
+      // Skip if recording any shortcut
+      if (isRecordingShortcut || recordingTabIndex !== null || recordingAiShortcut || recordingFocusShortcut || recordingFocusStartShortcut) return;
+      // Skip if in input fields
+      if (document.activeElement?.tagName === 'INPUT' || document.activeElement?.tagName === 'TEXTAREA') return;
+      // Only work in focus tab
+      if (activeTab !== 'focus') return;
+
+      if (checkFocusStartShortcut(e, focusStartShortcut)) {
+        e.preventDefault();
+        const { isFocusSessionActive, startTimer, stopFocusSession, savedBlocklist } = useFocusStore.getState();
+        if (isFocusSessionActive) {
+          stopFocusSession();
+        } else {
+          const blockedApps = savedBlocklist.map(app => app.bundle_id);
+          startTimer(blockedApps);
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleFocusStartShortcut);
+    return () => window.removeEventListener('keydown', handleFocusStartShortcut);
+  }, [focusStartShortcut, activeTab, isRecordingShortcut, recordingTabIndex, recordingAiShortcut, recordingFocusShortcut, recordingFocusStartShortcut]);
+
+  // Focus start shortcut recording
+  useEffect(() => {
+    if (!recordingFocusStartShortcut) return;
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
+
+      const parts: string[] = [];
+      if (e.metaKey) parts.push('cmd');
+      if (e.ctrlKey) parts.push('ctrl');
+      if (e.altKey) parts.push('alt');
+      if (e.shiftKey) parts.push('shift');
+
+      const key = e.key.toLowerCase();
+      if (!['control', 'shift', 'alt', 'meta'].includes(key)) {
+        parts.push(key);
+      }
+
+      setRecordedFocusStartShortcutKey(parts.join('+'));
+    };
+
+    const handleKeyUp = async () => {
+      if (recordedFocusStartShortcutKey && recordedFocusStartShortcutKey.includes('+')) {
+        setFocusStartShortcut(recordedFocusStartShortcutKey);
+        try {
+          await invoke('set_focus_start_shortcut', { shortcut: recordedFocusStartShortcutKey });
+        } catch (error) {
+          console.error('Failed to save focus start shortcut:', error);
+        }
+        setRecordingFocusStartShortcut(false);
+        setRecordedFocusStartShortcutKey('');
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [recordingFocusStartShortcut, recordedFocusStartShortcutKey]);
 
   const handleCreateTask = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -3232,6 +3336,48 @@ function App() {
                       const defaultShortcut = isMac ? 'cmd+l' : 'ctrl+l';
                       setFocusInputShortcut(defaultShortcut);
                       await invoke('set_focus_input_shortcut', { shortcut: defaultShortcut });
+                    }}
+                  >
+                    {t('common:buttons.reset')}
+                  </button>
+                </div>
+              </div>
+
+              {/* Focus Start Shortcut */}
+              <div className="ai-shortcut-section">
+                <h4>{t('settings:shortcut.focusStartTitle')}</h4>
+                <p className="settings-description-small">{t('settings:shortcut.focusStartDesc')}</p>
+                <div className="ai-shortcut-setting">
+                  <span className="ai-shortcut-label">{t('settings:shortcut.focusStartLabel')}</span>
+                  <button
+                    className={`ai-shortcut-input ${recordingFocusStartShortcut ? 'recording' : ''}`}
+                    onClick={() => {
+                      setRecordingFocusStartShortcut(true);
+                      setRecordedFocusStartShortcutKey('');
+                    }}
+                  >
+                    {recordingFocusStartShortcut
+                      ? (recordedFocusStartShortcutKey || t('settings:shortcut.placeholder'))
+                      : focusStartShortcut
+                    }
+                  </button>
+                  {recordingFocusStartShortcut && (
+                    <button
+                      className="shortcut-cancel"
+                      onClick={() => {
+                        setRecordingFocusStartShortcut(false);
+                        setRecordedFocusStartShortcutKey('');
+                      }}
+                    >
+                      ✕
+                    </button>
+                  )}
+                  <button
+                    className="shortcut-reset"
+                    onClick={async () => {
+                      const defaultShortcut = isMac ? 'cmd+enter' : 'ctrl+enter';
+                      setFocusStartShortcut(defaultShortcut);
+                      await invoke('set_focus_start_shortcut', { shortcut: defaultShortcut });
                     }}
                   >
                     {t('common:buttons.reset')}

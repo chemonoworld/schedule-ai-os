@@ -362,6 +362,35 @@ fn set_focus_input_shortcut(app: AppHandle, shortcut: String) -> Result<(), Stri
     Ok(())
 }
 
+// Focus start shortcut commands (for starting/stopping focus mode)
+#[tauri::command]
+fn get_focus_start_shortcut(app: AppHandle) -> String {
+    if let Ok(store) = app.store("settings.json") {
+        if let Some(shortcut) = store.get("focus_start_shortcut") {
+            if let Some(s) = shortcut.as_str() {
+                return s.to_string();
+            }
+        }
+    }
+    // macOS: cmd+enter, others: ctrl+enter
+    #[cfg(target_os = "macos")]
+    {
+        "cmd+enter".to_string()
+    }
+    #[cfg(not(target_os = "macos"))]
+    {
+        "ctrl+enter".to_string()
+    }
+}
+
+#[tauri::command]
+fn set_focus_start_shortcut(app: AppHandle, shortcut: String) -> Result<(), String> {
+    let store = app.store("settings.json").map_err(|e| e.to_string())?;
+    store.set("focus_start_shortcut", serde_json::json!(shortcut));
+    store.save().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
 // Language settings commands
 #[tauri::command]
 fn get_system_locale() -> String {
@@ -1205,6 +1234,9 @@ pub fn run() {
             // Focus input shortcut
             get_focus_input_shortcut,
             set_focus_input_shortcut,
+            // Focus start shortcut
+            get_focus_start_shortcut,
+            set_focus_start_shortcut,
             // Language settings
             get_system_locale,
             get_language,

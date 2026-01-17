@@ -36,7 +36,10 @@
     "aiInputLabel": "Toggle Mode:",
     "focusInputTitle": "Focus Input Shortcut",
     "focusInputDesc": "Shortcut to focus the task input field in Today tab.",
-    "focusInputLabel": "Focus Input:"
+    "focusInputLabel": "Focus Input:",
+    "focusStartTitle": "Focus Mode Shortcut",
+    "focusStartDesc": "Shortcut to start/stop focus mode in Focus tab.",
+    "focusStartLabel": "Toggle Focus:"
   },
   "planRules": {
     "title": "Plan Rules",
