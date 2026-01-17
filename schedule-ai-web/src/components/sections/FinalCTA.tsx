@@ -64,7 +64,18 @@ export function FinalCTA() {
             </Button>
           </motion.div>
 
-          <p className="text-sm text-white/60 mt-6">{t("footnote")}</p>
+          <p className="text-sm text-white/60 mt-6">
+            {t("footnote")}
+            <span className="mx-2">·</span>
+            <a
+              href="https://chromewebstore.google.com/detail/schedule-ai-focus/nfikhioiphhamicfhchojbmomejkbepb"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-white/80 hover:text-white underline underline-offset-2 transition-colors"
+            >
+              {t("chromeLink")}
+            </a>
+          </p>
         </FadeIn>
       </div>
     </section>

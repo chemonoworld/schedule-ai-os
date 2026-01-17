@@ -91,7 +91,11 @@
     "stepLinux2AppImage": "AppImage: chmod +x *.AppImage && ./*.AppImage",
     "stepLinux2Rpm": ".rpm: sudo rpm -i schedule-ai_*.rpm",
     "stepLinux3": "설정에서 Claude API 키를 입력하여 AI 기능을 활성화하세요",
-    "backHome": "홈으로 돌아가기"
+    "backHome": "홈으로 돌아가기",
+    "browserExtensions": "브라우저 확장 프로그램",
+    "chromeExtension": "Chrome 확장 프로그램",
+    "chromeExtensionDesc": "브라우저에서 직접 산만함을 차단하세요",
+    "installFromStore": "Chrome 웹스토어에서 설치"
   },
   "language": {
     "en": "English",
@@ -159,6 +163,7 @@
     "title": "오늘, 진짜로 일을 끝내보세요",
     "subtitle": "무료. 계정 필요 없음. 로컬 저장.",
     "button": "macOS용 다운로드",
-    "footnote": "macOS 12 이상 필요"
+    "footnote": "macOS 12 이상 필요",
+    "chromeLink": "Chrome 확장도 있어요"
   }
 }

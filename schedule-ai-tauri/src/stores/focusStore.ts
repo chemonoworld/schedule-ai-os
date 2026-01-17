@@ -3,6 +3,7 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen, UnlistenFn } from '@tauri-apps/api/event';
 import { sendNotification, isPermissionGranted, requestPermission } from '@tauri-apps/plugin-notification';
 import i18n from '../i18n';
+import { recordBlockEvent } from '../db';
 
 // Chrome Extension에서 Focus 제어 명령
 interface ExtensionFocusCommand {
@@ -375,9 +376,18 @@ export const useFocusStore = create<FocusState>((set, get) => ({
       if (frontmost && blockedApps.includes(frontmost.bundle_id)) {
         // 차단된 앱 감지 -> 종료
         const terminated = await terminateApp(frontmost.bundle_id);
-        if (terminated && !terminatedApps.includes(frontmost.bundle_id)) {
-          set({ terminatedApps: [...terminatedApps, frontmost.bundle_id] });
-          await sendTerminateNotification(frontmost.name);
+        if (terminated) {
+          // DB에 차단 이벤트 기록 (항상)
+          try {
+            await recordBlockEvent(frontmost.bundle_id, frontmost.name);
+          } catch (dbError) {
+            console.error('Failed to record block event:', dbError);
+          }
+          // 알림은 세션 내 중복 방지
+          if (!terminatedApps.includes(frontmost.bundle_id)) {
+            set({ terminatedApps: [...terminatedApps, frontmost.bundle_id] });
+            await sendTerminateNotification(frontmost.name);
+          }
         }
         // 우리 앱 활성화
         await activateApp();

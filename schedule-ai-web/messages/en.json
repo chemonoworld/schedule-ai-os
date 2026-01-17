@@ -91,7 +91,11 @@
     "stepLinux2AppImage": "For AppImage: chmod +x *.AppImage && ./*.AppImage",
     "stepLinux2Rpm": "For .rpm: sudo rpm -i schedule-ai_*.rpm",
     "stepLinux3": "Enter your Claude API key in Settings to enable AI features",
-    "backHome": "Back to Home"
+    "backHome": "Back to Home",
+    "browserExtensions": "Browser Extensions",
+    "chromeExtension": "Chrome Extension",
+    "chromeExtensionDesc": "Block distractions directly in your browser",
+    "installFromStore": "Install from Chrome Web Store"
   },
   "language": {
     "en": "English",
@@ -159,6 +163,7 @@
     "title": "Actually finish your work today",
     "subtitle": "Free. No account needed. Data stays local.",
     "button": "Download for macOS",
-    "footnote": "macOS 12+ required"
+    "footnote": "macOS 12+ required",
+    "chromeLink": "Also on Chrome"
   }
 }

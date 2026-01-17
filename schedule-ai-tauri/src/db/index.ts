@@ -1057,3 +1057,112 @@ export async function generateTasksFromRecurringPlan(
 
   return createdTasks;
 }
+
+// Focus Block Stats operations
+
+export interface BlockEvent {
+  id: string;
+  bundleId: string;
+  appName: string;
+  blockedAt: string;
+}
+
+export interface BlockStat {
+  bundleId: string;
+  appName: string;
+  count: number;
+}
+
+export interface DailyBlockStat {
+  date: string;
+  count: number;
+}
+
+interface BlockEventRow {
+  id: string;
+  bundle_id: string;
+  app_name: string;
+  blocked_at: string;
+}
+
+export async function recordBlockEvent(bundleId: string, appName: string): Promise<BlockEvent> {
+  const database = await getDb();
+  const id = generateId();
+  const now = formatDateTime(new Date());
+
+  await database.execute(
+    `INSERT INTO focus_block_events (id, bundle_id, app_name, blocked_at)
+     VALUES ($1, $2, $3, $4)`,
+    [id, bundleId, appName, now]
+  );
+
+  return {
+    id,
+    bundleId,
+    appName,
+    blockedAt: now,
+  };
+}
+
+export async function getBlockStatsByApp(): Promise<BlockStat[]> {
+  const database = await getDb();
+  const rows = await database.select<{ bundle_id: string; app_name: string; count: number }[]>(
+    `SELECT bundle_id, app_name, COUNT(*) as count
+     FROM focus_block_events
+     GROUP BY bundle_id
+     ORDER BY count DESC`
+  );
+
+  return rows.map(row => ({
+    bundleId: row.bundle_id,
+    appName: row.app_name,
+    count: row.count,
+  }));
+}
+
+export async function getBlockStatsByDate(days: number = 7): Promise<DailyBlockStat[]> {
+  const database = await getDb();
+  const today = new Date();
+  const startDate = new Date(today);
+  startDate.setDate(startDate.getDate() - days + 1);
+
+  const rows = await database.select<{ date: string; count: number }[]>(
+    `SELECT DATE(blocked_at) as date, COUNT(*) as count
+     FROM focus_block_events
+     WHERE DATE(blocked_at) >= $1
+     GROUP BY DATE(blocked_at)
+     ORDER BY date ASC`,
+    [formatDate(startDate)]
+  );
+
+  return rows.map(row => ({
+    date: row.date,
+    count: row.count,
+  }));
+}
+
+export async function getTotalBlockCount(): Promise<number> {
+  const database = await getDb();
+  const rows = await database.select<{ count: number }[]>(
+    `SELECT COUNT(*) as count FROM focus_block_events`
+  );
+  return rows[0]?.count ?? 0;
+}
+
+export async function getRecentBlockEvents(limit: number = 10): Promise<BlockEvent[]> {
+  const database = await getDb();
+  const rows = await database.select<BlockEventRow[]>(
+    `SELECT id, bundle_id, app_name, blocked_at
+     FROM focus_block_events
+     ORDER BY blocked_at DESC
+     LIMIT $1`,
+    [limit]
+  );
+
+  return rows.map(row => ({
+    id: row.id,
+    bundleId: row.bundle_id,
+    appName: row.app_name,
+    blockedAt: row.blocked_at,
+  }));
+}
