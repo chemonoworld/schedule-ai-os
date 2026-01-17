@@ -113,6 +113,18 @@ export function DownloadContent({ release }: { release: ReleaseData | null }) {
       {/* Installation Instructions */}
       <InstallationGuide platform={primaryPlatform} t={t} />
 
+      {/* Browser Extensions */}
+      <div className="mt-16 pt-12 border-t border-zinc-200 dark:border-zinc-800">
+        <h2 className="text-xl font-semibold text-zinc-900 dark:text-zinc-100 mb-6">
+          {t("browserExtensions")}
+        </h2>
+        <ExtensionCard
+          browser="chrome"
+          storeUrl="https://chromewebstore.google.com/detail/schedule-ai-focus/nfikhioiphhamicfhchojbmomejkbepb"
+          t={t}
+        />
+      </div>
+
       {/* Back to Home */}
       <div className="text-center mt-12">
         <Link
@@ -506,4 +518,71 @@ function DownloadIcon() {
       />
     </svg>
   );
+}
+
+function ExternalLinkIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      strokeWidth={2}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+      />
+    </svg>
+  );
+}
+
+function ChromeIcon({ className }: { className?: string }) {
+  return (
+    <svg className={className} viewBox="0 0 24 24" fill="currentColor">
+      <path d="M12 0C8.21 0 4.831 1.757 2.632 4.501l3.953 6.848A5.454 5.454 0 0 1 12 6.545h10.691A12 12 0 0 0 12 0zM1.931 5.47A11.943 11.943 0 0 0 0 12c0 6.012 4.42 10.991 10.189 11.864l3.953-6.847a5.45 5.45 0 0 1-6.865-2.29zm13.342 2.166a5.446 5.446 0 0 1 1.45 7.09l.002.001h-.002l-3.952 6.848a12.014 12.014 0 0 0 9.229-9.576zM12 16.364a4.364 4.364 0 1 1 0-8.728 4.364 4.364 0 0 1 0 8.728z" />
+    </svg>
+  );
+}
+
+function ExtensionCard({
+  browser,
+  storeUrl,
+  t,
+}: {
+  browser: "chrome" | "firefox" | "safari";
+  storeUrl: string;
+  t: ReturnType<typeof useTranslations<"download">>;
+}) {
+  if (browser === "chrome") {
+    return (
+      <div className="bg-zinc-50 dark:bg-zinc-900 rounded-xl p-6 border border-zinc-200 dark:border-zinc-800">
+        <div className="flex items-start gap-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-red-500 via-yellow-400 to-green-500 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <ChromeIcon className="w-6 h-6 text-white" />
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-semibold text-zinc-900 dark:text-zinc-100 mb-2">
+              {t("chromeExtension")}
+            </h3>
+            <p className="text-zinc-600 dark:text-zinc-400 text-sm mb-4">
+              {t("chromeExtensionDesc")}
+            </p>
+            <a
+              href={storeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 bg-zinc-900 dark:bg-zinc-100 text-white dark:text-zinc-900 px-4 py-2 rounded-lg font-medium hover:bg-zinc-700 dark:hover:bg-zinc-300 transition-colors text-sm"
+            >
+              {t("installFromStore")}
+              <ExternalLinkIcon className="w-4 h-4" />
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return null;
 }
