@@ -63,6 +63,35 @@ error[E0432]: unresolved imports `tokio::net::UnixListener`, `tokio::net::UnixSt
 | 앱 기본 기능 | ✅ | ✅ | ✅ |
 | Focus Mode | ✅ | ✅ | ✅ |
 | Chrome Extension 연동 | ✅ | ✅ | ✅ |
+| 프로세스 모니터링 | ✅ | ✅ | ❌ |
+| 앱 차단 (terminate) | ✅ | ✅ | ❌ |
+| 설치된 앱 목록 | ✅ | ✅ | ❌ |
+| 현재 활성 앱 감지 | ✅ | ✅ (X11 + Wayland) | ❌ |
+
+### Linux 프로세스 모니터링 구현
+
+Linux에서 프로세스 모니터링 기능 추가:
+
+**사용 기술:**
+- `procfs` - `/proc` 파일시스템 파싱
+- `x11rb` - X11 프로토콜로 활성 창 감지
+- `nix` - SIGTERM 시그널로 프로세스 종료
+- `gdbus` / `qdbus` - Wayland 환경에서 D-Bus를 통한 활성 창 감지
+
+**구현 내용:**
+- `get_installed_apps()`: `/usr/share/applications`, `~/.local/share/applications`, Flatpak, Snap 앱 목록
+- `get_running_apps()`: 설치된 앱 중 실행 중인 프로세스 필터링
+- `get_frontmost_app()`: X11 또는 Wayland 환경에 따라 자동 선택
+  - X11: `_NET_ACTIVE_WINDOW` 속성으로 활성 창 PID 조회
+  - Wayland (GNOME): `org.gnome.Shell.Eval` D-Bus 메서드로 `wm_class` 조회
+  - Wayland (KDE): `org.kde.KWin` D-Bus로 활성 창 정보 조회
+  - XWayland fallback: Wayland에서도 X11 앱은 XWayland를 통해 감지
+- `terminate_app_by_bundle_id()`: SIGTERM 시그널로 프로세스 종료
+
+**Wayland 지원 환경:**
+- GNOME Shell (Ubuntu, Fedora 등)
+- KDE Plasma (KWin)
+- XWayland를 통한 X11 앱
 
 ## 테스트
 
