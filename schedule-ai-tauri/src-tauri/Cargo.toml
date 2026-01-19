@@ -1,6 +1,6 @@
 [package]
 name = "schedule-ai-desktop"
-version = "0.1.5"
+version = "0.1.6"
 description = "ADHD-friendly Schedule Management App"
 authors = ["you"]
 edition = "2021"
