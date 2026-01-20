@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Schedule AI",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "identifier": "xyz.schdl.scheduleai",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -39,7 +39,7 @@
     "shortDescription": "ADHD-friendly schedule management",
     "longDescription": "An intelligent schedule management app designed for people with ADHD. Features smart TODO generation, task splitting, and focus mode.",
     "macOS": {
-      "entitlements": "entitlements.plist",
+      "entitlements": null,
       "minimumSystemVersion": "10.15"
     }
   },
